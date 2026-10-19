@@ -1,0 +1,69 @@
+{
+ "duration": 121.065,
+ "fps": 30,
+ "scenes": [
+  {
+   "n": 1,
+   "name": "Title",
+   "text": "Hi! This is Mochi. Mochi is a capybara, and Mochi runs purchasing for a tiny café.",
+   "start": 0.9,
+   "end": 7.808
+  },
+  {
+   "n": 2,
+   "name": "The problem",
+   "text": "Small cafés overpay for supplies. Comparing quotes means phone tag, emails and spreadsheets, so most owners just reorder from the same supplier at the same price every week.",
+   "start": 8.458,
+   "end": 19.336
+  },
+  {
+   "n": 3,
+   "name": "Meet the herd",
+   "text": "So we built CapyBargain: a purchasing department run by AI agents on Band. Tofu counts the pantry, Yuzu guards the budget, and Mochi does the haggling. The suppliers are agents too: Shelly the tortoise, Zippy the hummingbird and Foxy the fox. Capybaras get along with everyone!",
+   "start": 19.986,
+   "end": 39.281
+  },
+  {
+   "n": 4,
+   "name": "Live run: kickoff",
+   "text": "Here's a real run on Band. The owner asks Tofu for a pantry check. Uh oh, coffee runs out tomorrow! Tofu puts three tasks on the board and mentions Mochi, who looks up its peers, finds three suppliers, and opens a quote room with each.",
+   "start": 40.381,
+   "end": 56.345
+  },
+  {
+   "n": 5,
+   "name": "Live run: haggling",
+   "text": "Quotes come back in seconds. Shelly is cheapest, but slow and steady takes four days, too late for coffee. So for each item, Mochi picks the cheapest supplier that arrives in time, then counters with the best price it saw elsewhere. Foxy tries to sneak in some honey. Mochi politely says no thank you.",
+   "start": 56.995,
+   "end": 76.129
+  },
+  {
+   "n": 6,
+   "name": "Live run: approval",
+   "text": "The final offers come to four hundred and twelve dollars, about fifty-four dollars less than last month. But Yuzu spots that it's fifteen dollars over budget, so Mochi raises a paw and asks the owner. One reply: approved!",
+   "start": 76.779,
+   "end": 90.943
+  },
+  {
+   "n": 7,
+   "name": "Live run: orders",
+   "text": "Purchase orders go out, all three suppliers confirm, and every task turns green.",
+   "start": 91.593,
+   "end": 96.457
+  },
+  {
+   "n": 8,
+   "name": "Why Band",
+   "text": "Every step is a real Band message. Mentions route the work, peer lookup finds suppliers, the task board tracks progress, and attention events keep a human in charge. And each supplier could live in its own company's Band account, connected by a contact request.",
+   "start": 97.457,
+   "end": 113.014
+  },
+  {
+   "n": 9,
+   "name": "Outro",
+   "text": "CapyBargain. Capybaras are friends with everyone… even your suppliers!",
+   "start": 113.664,
+   "end": 118.493
+  }
+ ]
+}

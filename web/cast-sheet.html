@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Cast sheet</title>
+<style>
+  body { margin: 0; background: #FFF4E4; font-family: system-ui, sans-serif; }
+  .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 16px; padding: 24px; }
+  .cell { background: #fff; border-radius: 18px; padding: 12px; text-align: center; box-shadow: 0 2px 0 #ead9c4; }
+  .cell svg { width: 100%; height: auto; display: block; }
+  .big svg { width: 260px; }
+  .row { display: flex; gap: 12px; justify-content: center; padding: 12px; background: #8FD3E0; }
+</style></head>
+<body>
+<div class="grid" id="g"></div>
+<div class="row" id="r"></div>
+<script type="module">
+  import { character, CAST } from "./art.js";
+  const g = document.getElementById("g");
+  for (const eyes of ["open", "happy", "sleepy"]) {
+    for (const name of Object.keys(CAST)) {
+      g.insertAdjacentHTML("beforeend", `<div class="cell">${character(name, { eyes, t: 0.31 })}<div>${name} · ${eyes}</div></div>`);
+    }
+  }
+  const r = document.getElementById("r");
+  for (const name of Object.keys(CAST)) r.insertAdjacentHTML("beforeend", `<div class="big">${character(name, { t: 0.5 })}</div>`);
+</script>
+</body></html>

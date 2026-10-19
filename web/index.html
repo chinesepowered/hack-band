@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CapyBargain Onsen</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="stage" id="stage"></div>
+  <div class="controls" id="controls">
+    <button id="play">⏸ Pause</button>
+    <input type="range" id="scrub" min="0" max="1000" value="0" aria-label="Replay position">
+    <button data-speed="0.5">0.5×</button>
+    <button data-speed="1" class="on">1×</button>
+    <button data-speed="2">2×</button>
+  </div>
+  <script type="module">
+    import { buildModel } from "./model.js";
+    import { Onsen, fitStage } from "./onsen.js";
+
+    // ?live           poll the local server for the newest run while it happens
+    // ?src=<file>     replay another transcript (default: the recorded demo run)
+    // ?t=12&paused    jump to a moment
+    const params = new URLSearchParams(location.search);
+    const live = params.has("live");
+    const src = params.get("src") || (live ? "/api/live" : "../runs/demo-transcript.json");
+    const stage = document.getElementById("stage");
+    fitStage(stage);
+    await document.fonts.ready;
+
+    if (live) {
+      document.getElementById("controls").style.display = "none";
+      const seen = new Map();
+      let onsen = null;
+      let model = null;
+      let rooms = 0;
+      const poll = async () => {
+        try {
+          const data = await (await fetch(src, { cache: "no-store" })).json();
+          if (data.rooms) {
+            model = buildModel(data);
+            const now = performance.now() / 1000;
+            for (const e of model.events) if (!seen.has(e.id)) seen.set(e.id, now);
+            if (!onsen || model.rooms.length !== rooms) {
+              onsen = new Onsen(stage, model, { badge: "Live on Band" });
+              rooms = model.rooms.length;
+            } else {
+              onsen.model = model;
+            }
+          }
+        } catch (err) {
+          console.warn("live poll failed", err);
+        }
+        setTimeout(poll, 1200);
+      };
+      poll();
+      const frame = () => {
+        if (onsen) onsen.render(performance.now() / 1000, (e) => seen.get(e.id) ?? Infinity);
+        requestAnimationFrame(frame);
+      };
+      frame();
+    } else {
+      const model = buildModel(await (await fetch(src)).json());
+      const onsen = new Onsen(stage, model);
+      const LEAD = 1.5;
+      const end = model.duration + LEAD + 4;
+      let t = parseFloat(params.get("t") ?? "0");
+      let speed = 1;
+      let playing = !params.has("paused");
+      let last = performance.now();
+      const scrub = document.getElementById("scrub");
+      const play = document.getElementById("play");
+      play.onclick = () => {
+        playing = !playing;
+        if (playing && t >= end) t = 0;
+        play.textContent = playing ? "⏸ Pause" : "▶ Play";
+      };
+      scrub.oninput = () => (t = (scrub.value / 1000) * end);
+      for (const b of document.querySelectorAll("[data-speed]")) {
+        b.onclick = () => {
+          speed = +b.dataset.speed;
+          document.querySelectorAll("[data-speed]").forEach((x) => x.classList.toggle("on", x === b));
+        };
+      }
+      const frame = (now) => {
+        const dt = Math.min(0.1, (now - last) / 1000);
+        last = now;
+        if (playing) t = Math.min(end, t + dt * speed);
+        if (t >= end && playing) play.onclick();
+        scrub.value = String(Math.round((t / end) * 1000));
+        onsen.render(t, (e) => e.ts + LEAD);
+        requestAnimationFrame(frame);
+      };
+      requestAnimationFrame(frame);
+    }
+  </script>
+</body>
+</html>

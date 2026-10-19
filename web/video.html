@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CapyBargain demo video</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="video.css">
+</head>
+<body>
+  <div class="video-root" id="root"></div>
+  <script type="module">
+    // ?t=42      show one frame
+    // ?play      play in real time with the soundtrack (video/build/soundtrack.wav)
+    import { createDirector } from "./director.js";
+
+    const root = document.getElementById("root");
+    const fit = () => {
+      const k = Math.min(innerWidth / 1920, innerHeight / 1080);
+      root.style.transform = `translate(${(innerWidth - 1920 * k) / 2}px, ${(innerHeight - 1080 * k) / 2}px) scale(${k})`;
+    };
+    addEventListener("resize", fit);
+    fit();
+    await document.fonts.ready;
+
+    const params = new URLSearchParams(location.search);
+    const director = await createDirector(root);
+    window.director = director;
+    window.renderAt = director.renderAt;
+    director.renderAt(parseFloat(params.get("t") ?? "0"));
+
+    if (params.has("play")) {
+      const audio = new Audio("../video/build/soundtrack.wav");
+      document.body.addEventListener("click", () => audio.play(), { once: true });
+      const frame = () => {
+        director.renderAt(audio.currentTime);
+        requestAnimationFrame(frame);
+      };
+      frame();
+    }
+    window.directorReady = true;
+  </script>
+</body>
+</html>

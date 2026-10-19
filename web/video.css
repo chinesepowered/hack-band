@@ -1,0 +1,211 @@
+/* Scenes for the demo video (web/video.html). The live-run scenes reuse the
+   onsen stage from style.css. */
+
+body { background: #1d140e; }
+.video-root { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; transform-origin: 0 0; background: var(--cream); }
+.layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: radial-gradient(circle at 15% 10%, #fff 0, transparent 40%), radial-gradient(circle at 90% 90%, #fde3c2 0, transparent 42%), var(--cream);
+}
+.layer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(201, 144, 99, 0.13) 1.8px, transparent 1.9px);
+  background-size: 32px 32px;
+}
+.layer > * { position: absolute; }
+.spring { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* --- title ---------------------------------------------------------------------------------------- */
+.t-title, .o-title {
+  left: 50%;
+  top: 110px;
+  font-family: var(--heading);
+  font-weight: 700;
+  font-size: 176px;
+  line-height: 1;
+  letter-spacing: -3px;
+  white-space: nowrap;
+  transform-origin: 50% 60%;
+}
+.capy { color: var(--capy-dark); }
+.bar { color: var(--yuzu-deep); }
+.t-sub { left: 50%; top: 318px; font-size: 44px; font-weight: 800; color: var(--ink-soft); white-space: nowrap; }
+.t-sub b { font-family: var(--heading); color: var(--ink); }
+.t-pool { left: 0; bottom: 0; width: 1920px; height: 600px; }
+.t-front { position: absolute; inset: 0; width: 100%; height: 100%; }
+.t-mochi { position: absolute; left: 50%; bottom: 20px; width: 500px; }
+.t-tag {
+  left: 1290px;
+  top: 640px;
+  z-index: 3;
+  background: #fff;
+  border-radius: 999px;
+  padding: 8px 30px 10px;
+  font-weight: 800;
+  font-size: 36px;
+  box-shadow: var(--shadow);
+  white-space: nowrap;
+}
+.t-tag em { font-style: normal; color: var(--ink-soft); font-weight: 700; }
+.t-sign {
+  left: 300px;
+  top: 600px;
+  background: #a8714a;
+  color: #fff8ee;
+  font-family: var(--heading);
+  font-weight: 600;
+  font-size: 54px;
+  padding: 12px 32px 16px;
+  border-radius: 22px;
+  box-shadow: 0 6px 0 #7c4e30;
+}
+
+/* --- problem ---------------------------------------------------------------------------------------- */
+.p-title, .h-title, .w-title {
+  left: 50%;
+  top: 64px;
+  font-family: var(--heading);
+  font-weight: 700;
+  font-size: 84px;
+  white-space: nowrap;
+}
+.p-cards { left: 0; right: 0; top: 270px; display: flex; justify-content: center; gap: 48px; }
+.p-card {
+  width: 430px;
+  height: 330px;
+  background: #fff;
+  border-radius: 38px;
+  border: 3px solid var(--line);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  padding: 0 24px;
+}
+.p-card .big { font-size: 112px; line-height: 1.05; }
+.p-card b { font-family: var(--heading); font-size: 46px; font-weight: 600; }
+.p-card span { font-size: 27px; font-weight: 700; color: var(--ink-soft); }
+.p-same {
+  left: 50%;
+  top: 676px;
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  background: var(--rose-soft);
+  border: 3px solid #f4c3bc;
+  border-radius: 999px;
+  padding: 14px 54px 14px 22px;
+  white-space: nowrap;
+}
+.p-same b { display: block; font-family: var(--heading); font-weight: 600; font-size: 46px; }
+.p-same span { font-size: 28px; font-weight: 800; color: var(--ink-soft); }
+.p-tofu { width: 150px; position: static; }
+
+/* --- herd --------------------------------------------------------------------------------------------- */
+.h-title span { font-family: var(--body); font-size: 40px; font-weight: 800; color: var(--ink-soft); }
+.h-row-label { left: 0; right: 0; text-align: center; font-weight: 800; font-size: 29px; color: var(--ink-soft); }
+.h-row-label.r1 { top: 182px; }
+.h-row-label.r2 { top: 520px; }
+.h-row { left: 0; right: 0; display: flex; justify-content: center; gap: 40px; }
+.h-row.r1 { top: 226px; }
+.h-row.r2 { top: 564px; }
+.h-card {
+  width: 480px;
+  height: 278px;
+  background: #fff;
+  border-radius: 34px;
+  border: 3px solid var(--line);
+  box-shadow: var(--shadow);
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  grid-template-rows: auto auto 1fr;
+  column-gap: 18px;
+  padding: 26px 26px 20px;
+  align-items: center;
+}
+.h-pic { grid-row: 1 / 4; width: 190px; background: linear-gradient(#fffaf2, #dff3f7); border-radius: 26px; padding: 8px; }
+.h-name { font-family: var(--heading); font-weight: 700; font-size: 46px; align-self: end; }
+.h-role { font-weight: 800; font-size: 25px; color: var(--yuzu-deep); }
+.h-line { font-weight: 700; font-size: 23px; color: var(--ink-soft); align-self: start; margin-top: 6px; line-height: 1.25; }
+.h-banner {
+  left: 50%;
+  top: 866px;
+  background: var(--ink);
+  color: #fff8ee;
+  font-family: var(--heading);
+  font-weight: 600;
+  font-size: 46px;
+  padding: 10px 40px 14px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.h-hearts { inset: 0; pointer-events: none; }
+.h-hearts span { position: absolute; font-size: 46px; }
+
+/* --- why Band -------------------------------------------------------------------------------------------- */
+.w-grid { left: 150px; width: 1170px; top: 196px; display: flex; flex-direction: column; gap: 20px; }
+.w-tile {
+  display: flex;
+  gap: 26px;
+  align-items: center;
+  background: #fff;
+  border-radius: 30px;
+  border: 3px solid var(--line);
+  box-shadow: var(--shadow);
+  padding: 16px 28px;
+}
+.w-icon {
+  width: 96px;
+  height: 96px;
+  flex: none;
+  border-radius: 28px;
+  background: var(--yuzu-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 54px;
+  font-family: var(--heading);
+  font-weight: 700;
+  color: var(--yuzu-deep);
+}
+.w-tile b { display: block; font-family: var(--heading); font-weight: 600; font-size: 40px; }
+.w-tile span { font-size: 26px; font-weight: 700; color: var(--ink-soft); }
+.w-stats { right: 120px; top: 240px; display: flex; flex-direction: column; gap: 16px; align-items: flex-end; }
+.w-stats span { background: #fff; border: 3px solid var(--line); border-radius: 999px; padding: 8px 26px; font-weight: 800; font-size: 30px; box-shadow: var(--shadow); }
+.w-mochi { right: 150px; bottom: 120px; width: 300px; }
+
+/* --- outro ------------------------------------------------------------------------------------------------- */
+.o-title { top: 70px; font-size: 156px; }
+.o-line { left: 50%; top: 248px; font-size: 48px; font-weight: 800; white-space: nowrap; }
+.o-stats { left: 0; right: 0; top: 336px; display: flex; justify-content: center; gap: 18px; }
+.o-stats span { background: #fff; border: 3px solid var(--line); border-radius: 999px; padding: 8px 24px; font-weight: 800; font-size: 30px; box-shadow: var(--shadow); }
+.o-pool { left: 0; bottom: 0; width: 1920px; height: 620px; }
+.o-who { position: absolute; bottom: 98px; width: 262px; }
+.o-front { position: absolute; inset: 0; width: 100%; height: 100%; }
+.o-foot { right: 40px; top: 30px; font-weight: 800; font-size: 26px; color: var(--ink-soft); }
+
+/* --- overlays ------------------------------------------------------------------------------------------------ */
+.spot { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; pointer-events: none; z-index: 30; opacity: 0; }
+.toast {
+  position: absolute;
+  left: 47.3%;
+  top: 22px;
+  z-index: 60;
+  background: var(--ink);
+  color: #fff8ee;
+  font-family: var(--heading);
+  font-weight: 600;
+  font-size: 42px;
+  padding: 8px 36px 12px;
+  border-radius: 999px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  display: none;
+}
+.vcap { z-index: 70; }
