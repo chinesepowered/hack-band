@@ -46,8 +46,10 @@ def main() -> None:
             if member.name in names_taken:
                 sys.exit(
                     f"An agent named {member.name!r} already exists on your account but "
-                    "agent_config.yaml has no key for it. Delete it in the Band app or "
-                    "add its credentials to agent_config.yaml by hand."
+                    "agent_config.yaml has no key for it. Copy the agent_config.yaml from "
+                    "where you first registered the herd, or regenerate the agent's key in "
+                    "the Band app and add it under the key "
+                    f"{member.key!r}."
                 )
             resp = http.post(
                 "/api/v1/me/agents/register",

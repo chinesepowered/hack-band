@@ -61,6 +61,9 @@ cp .env.example .env                           # paste your Band user API key
 uv run python scripts/register_agents.py       # creates the 6 agents, saves their keys to agent_config.yaml
 ```
 
+Already registered the herd somewhere else? Copy that `agent_config.yaml` next to `.env` instead
+(each agent's key is shown only once, but you can regenerate one in the Band app).
+
 **Live, with you as the owner:**
 
 ```bash
