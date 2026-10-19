@@ -4,7 +4,8 @@
 
 Small cafés overpay for supplies, because comparing quotes means phone tag, emails and spreadsheets.
 CapyBargain hands that job to a herd of agents that talk to each other, and to the café's suppliers,
-through Band rooms. A human owner stays in charge of the money.
+through Band rooms. Each agent thinks with an LLM (Qwen3.8-27B in the demo), and a human owner stays in
+charge of the money.
 
 🎬 **Demo video:** [`video/capybargain-demo.mp4`](video/capybargain-demo.mp4) (2 minutes)
 
@@ -30,13 +31,38 @@ through Band rooms. A human owner stays in charge of the money.
    separate quote room with each of Shelly, Zippy and Foxy.
 3. The quotes come back. For each item Mochi picks the **cheapest supplier that arrives before the shelf runs empty**:
    Shelly is cheapest for coffee but too slow, so coffee goes to Zippy. Oat milk goes to Foxy and flour to Shelly.
-4. Mochi counters with the best price it saw elsewhere, and politely declines Foxy's honey bundle 🍯.
-   Final offers: **$412.80**, which is **$53.90 less than last month** (−12%).
-5. **Yuzu** flags that this is **$15.10 over** the weekly budget. Mochi raises an `attention` event, and the owner
+4. Mochi's LLM decides what to ask for (it asked Zippy for $23.50/kg and Shelly for $10.50 a bag), and politely
+   declines Foxy's honey bundle 🍯. Each supplier's LLM decides how far to bend.
+   Final offers: **$413.10**, which is **$53.60 less than last month** (−11%).
+5. **Yuzu** flags that this is **$15.40 over** the weekly budget. Mochi raises an `attention` event, and the owner
    replies "approve".
 6. Purchase orders go out, all three suppliers confirm, every task on the board turns green, and Yuzu logs the spend.
 
-The whole negotiation took **35 seconds** and produced 47 Band events across 4 rooms.
+The whole negotiation took **48 seconds** and produced 48 Band events across 4 rooms. Because the LLMs make
+the moves, every run lands on slightly different prices.
+
+## LLM brains, with guardrails
+
+Every message has two parts. The first line is the agent's own voice, written by the LLM in character: Foxy
+flatters, Shelly is slow and steady, Yuzu is plain about money. The rest is a payload written by code: the
+markdown tables and marker lines the other agents parse. The model can be as chatty as it likes without
+breaking a handoff.
+
+The LLM also makes the negotiation moves, inside limits enforced in [`capybargain/deal.py`](capybargain/deal.py):
+
+| Decision | Made by | Guardrail (code) |
+|---|---|---|
+| Which supplier wins each item | Code | Cheapest one that delivers before the shelf runs empty |
+| What Mochi asks each supplier for | Mochi's LLM | Between 80% and 98% of the quote, on a nickel |
+| How far each supplier bends | Each supplier's LLM | Never below its floor or Mochi's ask, never above its quote |
+| Whether the order fits the budget | Code (Yuzu) | Over budget always goes to the human |
+
+Sentences that state a price are dropped from lines that sit on a price table, so the model can't contradict
+the numbers. You can also just talk to the herd: mention any agent in the Band app ("@Mochi why Zippy for the
+coffee?", "@Foxy what's in the honey bundle?") and it answers in character, from what it knows about the deal.
+
+Any OpenAI-compatible endpoint works ([`capybargain/llm.py`](capybargain/llm.py)). Without one, or when a call
+fails, the agents fall back to built-in lines and the same negotiation policy, so a run never stalls.
 
 ## How it uses Band
 
@@ -57,7 +83,7 @@ You need Python 3.11+, [uv](https://docs.astral.sh/uv/) and a Band account.
 
 ```bash
 uv sync
-cp .env.example .env                           # paste your Band user API key
+cp .env.example .env                           # paste your Band user API key and LLM endpoint
 uv run python scripts/register_agents.py       # creates the 6 agents, saves their keys to agent_config.yaml
 ```
 
@@ -71,7 +97,8 @@ uv run python -m capybargain.run               # the herd comes online
 ```
 
 In the Band app, make a room with Mochi, Tofu and Yuzu and say `@Tofu pantry check please`.
-Watch the quote rooms appear, then reply `@Mochi approve` when Mochi asks.
+Watch the quote rooms appear, then reply `@Mochi approve` when Mochi asks. Ask any of them questions along
+the way.
 
 **Fully scripted** (the script plays the owner and saves a transcript):
 
@@ -94,7 +121,8 @@ uv run python -m capybargain.ui_server
 ```
 capybargain/
   agents.py        the herd: Tofu, Yuzu, Mochi and the suppliers (Band SimpleAdapters)
-  deal.py          shopping lists, quotes, counter-offers, budget math (pure, unit tested)
+  llm.py           LLM voice and decisions from any OpenAI-compatible endpoint, with fallbacks
+  deal.py          shopping lists, quotes, counter-offers, guardrails, budget math (pure, unit tested)
   pantry.py        the café's pantry, budget and each supplier's price list
   roster.py        names and descriptions the agents are registered with
   run.py           starts all six agents; --demo plays the owner too
@@ -124,10 +152,8 @@ The music is synthesized in `video/soundtrack.py`, and all the characters are or
 
 ## Honest notes
 
-- **The agents' decisions are code, not an LLM.** The negotiation strategy lives in `capybargain/deal.py`
-  (unit tested), so runs are reproducible. Every message, task and approval is still a real Band event. To
-  make the suppliers chattier, swap a supplier's `SimpleAdapter` for one of Band's LLM adapters; Mochi only
-  depends on the markdown tables it exchanges.
+- **The LLM decides inside fences.** Picking winners and checking the budget are deliberately code, and every
+  price the model proposes is clamped. That keeps the money safe, at the cost of some freedom.
 - **In this demo all six agents live in one Band account.** In production, each supplier would run in its own
   company's account and Mochi would connect with a contact request (`band_add_contact`). That cross-company
   step isn't exercised here.

@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 from band import Agent, configure_logging
 from band.config import load_agent_config
 
-from capybargain import owner, transcript
+from capybargain import llm, owner, transcript
 from capybargain.agents import Mochi, Supplier, Tofu, Yuzu, pace
 from capybargain.roster import FOXY, SHELLY, ZIPPY
 
@@ -37,6 +37,7 @@ async def main(args: argparse.Namespace) -> None:
     log.setLevel(logging.INFO)
     log.propagate = False
     c = owner.client()
+    log.info("🧠 brains: %s", f"{llm.model_name()} (LLM)" if llm.enabled() else "built-in lines and policy")
 
     async def owner_approves(room_id: str) -> None:
         await asyncio.sleep(args.approve_after)

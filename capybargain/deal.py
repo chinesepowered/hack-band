@@ -11,7 +11,7 @@ from __future__ import annotations
 import re
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
-from decimal import ROUND_FLOOR, ROUND_HALF_UP, Decimal
+from decimal import ROUND_CEILING, ROUND_FLOOR, ROUND_HALF_UP, Decimal, InvalidOperation
 
 from capybargain.pantry import PantryItem, SupplierProfile
 
@@ -32,6 +32,27 @@ def parse_money(text: str) -> Decimal:
 
 def to_nickel(amount: Decimal, rounding: str = ROUND_HALF_UP) -> Decimal:
     return ((amount / NICKEL).quantize(Decimal(1), rounding=rounding) * NICKEL).quantize(CENT)
+
+
+def clamp_price(proposed: object, low: Decimal, high: Decimal, rounding: str = ROUND_HALF_UP) -> Decimal:
+    """Force a (model-proposed) price into [low, high], on a nickel. Junk becomes ``high``."""
+    try:
+        price = Decimal(str(proposed).replace("$", "").replace(",", "").strip())
+    except (InvalidOperation, ValueError):
+        price = high
+    if not price.is_finite():
+        price = high
+    price = to_nickel(min(max(price, low), high), rounding)
+    if price < low:
+        price = to_nickel(low, ROUND_CEILING)
+    if price > high:
+        price = to_nickel(high, ROUND_FLOOR)
+    return max(min(price, high), low).quantize(CENT) if low <= high else high.quantize(CENT)
+
+
+def ask_bounds(current: Decimal) -> tuple[Decimal, Decimal]:
+    """How far Mochi may push: between 80% and 98% of the supplier's price."""
+    return current * Decimal("0.80"), current * Decimal("0.98")
 
 
 # --- markdown tables -----------------------------------------------------------
@@ -238,12 +259,18 @@ class Counter:
     seen_elsewhere: Decimal | None  # lowest price another supplier offered
 
 
-def counter_offers(awards: Mapping[str, Award], quotes: Mapping[str, Quote]) -> dict[str, list[Counter]]:
+def counter_offers(
+    awards: Mapping[str, Award],
+    quotes: Mapping[str, Quote],
+    asks: Mapping[str, object] | None = None,
+) -> dict[str, list[Counter]]:
     """What Mochi asks each winning supplier for in round two.
 
-    If someone else was cheaper (even if too slow), ask to move toward that
-    price, but never more than 15% off. If the winner is already the cheapest,
-    ask for a polite 5% regular-customer discount.
+    ``asks`` are Mochi's own (model-chosen) unit prices per item, clamped to
+    ``ask_bounds``. Without one, the built-in policy applies: if someone else
+    was cheaper (even if too slow), ask to move toward that price, but never
+    more than 15% off; if the winner is already the cheapest, ask for a polite
+    5% regular-customer discount.
     """
     counters: dict[str, list[Counter]] = {}
     for award in awards.values():
@@ -256,10 +283,12 @@ def counter_offers(awards: Mapping[str, Award], quotes: Mapping[str, Quote]) -> 
         lowest = min(others) if others else None
         if lowest is not None and lowest < current:
             target = max(lowest, to_nickel(current * Decimal("0.85"), ROUND_FLOOR))
-            counters.setdefault(award.supplier, []).append(Counter(award.line, target, lowest))
         else:
             target = to_nickel(current * Decimal("0.95"), ROUND_FLOOR)
-            counters.setdefault(award.supplier, []).append(Counter(award.line, target, None))
+        if asks and award.item.name in asks:
+            target = clamp_price(asks[award.item.name], *ask_bounds(current), rounding=ROUND_FLOOR)
+        seen = lowest if lowest is not None and lowest < current else None
+        counters.setdefault(award.supplier, []).append(Counter(award.line, target, seen))
     return counters
 
 
@@ -282,14 +311,32 @@ def parse_counter_table(text: str) -> list[Counter]:
     return counters
 
 
-def respond_to_counters(profile: SupplierProfile, counters: Iterable[Counter]) -> Quote:
-    """A supplier's final offer: give up ``meet`` of the gap, never below its floor."""
+def concession_bounds(profile: SupplierProfile, counter: Counter) -> tuple[Decimal, Decimal]:
+    """A supplier never goes below its floor or the buyer's ask, nor above its quote."""
+    floor = profile.prices[counter.line.item] * profile.floor
+    return max(floor, counter.target), counter.line.unit_price
+
+
+def respond_to_counters(
+    profile: SupplierProfile,
+    counters: Iterable[Counter],
+    prices: Mapping[str, object] | None = None,
+) -> Quote:
+    """A supplier's final offer.
+
+    ``prices`` are the supplier's own (model-chosen) unit prices, clamped to
+    ``concession_bounds``. Without one, the built-in policy gives up ``meet``
+    of the gap to the buyer's ask.
+    """
     lines = []
     for c in counters:
         current = c.line.unit_price
-        floor = profile.prices[c.line.item] * profile.floor
-        conceded = current - profile.meet * (current - c.target)
-        price = min(current, to_nickel(max(c.target, floor, conceded)))
+        low, high = concession_bounds(profile, c)
+        if prices and c.line.item in prices:
+            price = clamp_price(prices[c.line.item], low, high)
+        else:
+            conceded = current - profile.meet * (current - c.target)
+            price = clamp_price(conceded, low, high)
         lines.append(QuoteLine(c.line.item, c.line.qty, c.line.unit, price))
     return Quote(profile.name, tuple(lines), profile.delivery_days)
 

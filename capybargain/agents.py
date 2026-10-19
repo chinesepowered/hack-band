@@ -5,6 +5,13 @@ rooms: @mentions route work, markdown tables carry the numbers, the room's
 task board tracks progress, and an ``attention`` event asks the human owner
 for approval.
 
+Every message has two parts: a line in the agent's own voice, written by the
+LLM when one is configured (see llm.py), and a payload written by code: the
+tables and marker lines the other agents parse. The model can be as chatty as
+it likes without breaking a handoff. It also makes the real negotiation moves,
+Mochi's asks and each supplier's concessions, inside limits enforced by
+deal.py.
+
 Rooms:
   ☕ Capy Café HQ          owner + Mochi + Tofu + Yuzu (task board lives here)
   🐢 Shelly × Capy Café    Mochi + Shelly (+ owner, watching)
@@ -18,7 +25,7 @@ import asyncio
 import logging
 import os
 import re
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Mapping
 from dataclasses import dataclass, field
 from datetime import date, timedelta
 from decimal import Decimal
@@ -29,7 +36,7 @@ from band.core.types import PlatformMessage
 from band.runtime.tools.agent import AgentTools
 from band_rest import ChatRoomRequest
 
-from capybargain import deal
+from capybargain import deal, llm
 from capybargain.deal import money, plural
 from capybargain.pantry import (
     PANTRY,
@@ -43,19 +50,80 @@ from capybargain.roster import MOCHI, SUPPLIER_PREFIX, TOFU, YUZU, Member
 
 log = logging.getLogger("capybargain")
 
+HQ_TITLE = "☕ Capy Café HQ"
+
+CAPY_EMOJI = (
+    " There is no capybara emoji, so never use 🦫, 🐹, 🐿️ or 🐭 for yourself; 🍊, 🌿 and ☕ suit you."
+)
+
+PERSONAS = {
+    "Tofu": (
+        "You are Tofu, the pantry keeper at Capy Café: a capybara in a tiny chef hat who counts "
+        "everything twice and gets a little dramatic when something runs low." + CAPY_EMOJI
+    ),
+    "Mochi": (
+        "You are Mochi, head buyer at Capy Café: a calm, polite capybara with a yuzu on your head. "
+        "You haggle gently but firmly, thank everyone, and never buy extras that aren't on the list." + CAPY_EMOJI
+    ),
+    "Yuzu": (
+        "You are Yuzu, Capy Café's treasurer: a careful capybara with round glasses and a gold coin "
+        "on your head. You love a balanced budget and say things plainly." + CAPY_EMOJI
+    ),
+    "Shelly": (
+        "You are Shelly, a slow and steady tortoise who runs Slow & Steady Farm. Your prices are the "
+        "lowest around, but deliveries take 4 days. You speak slowly and kindly, with farm and tortoise jokes."
+    ),
+    "Zippy": (
+        "You are Zippy, a speedy hummingbird who runs Zippy Express Pantry: next-day delivery at "
+        "premium prices. You talk fast and excited, with zoom and wing jokes."
+    ),
+    "Foxy": (
+        "You are Foxy, a charming fox who runs Foxy Wholesale: 2-day delivery, fair prices, and you "
+        "always try to upsell your honey bundle. Smooth, flattering and a little cheeky."
+    ),
+}
+
+# How each supplier haggles. The model decides; deal.concession_bounds keeps it honest.
+HAGGLE = {
+    "Shelly": "You rarely move far: shave a few cents at most. Slow and steady.",
+    "Zippy": "Speed is worth paying for, but for a polite customer you'll meet them partway.",
+    "Foxy": "You'll sweeten the price, especially once your honey bundle is declined.",
+}
+
+MENTION_TOKEN = re.compile(r"@\[\[[0-9a-f-]{36}\]\]\s*")
+
 
 def pace() -> float:
     """Multiplier for the agents' "thinking" pauses (CAPY_PACE). 0 makes the herd instant."""
     return float(os.environ.get("CAPY_PACE", "1"))
 
 
-HQ_TITLE = "☕ Capy Café HQ"
-
-
 def when(days: int) -> str:
     if days == 1:
         return "tomorrow"
     return "on " + (date.today() + timedelta(days=days)).strftime("%A")
+
+
+def plain(content: str) -> str:
+    """A message without Band's mention tokens, for the model to read."""
+    return MENTION_TOKEN.sub("", content).strip()
+
+
+def compose(voice: str, payload: str) -> str:
+    return f"{voice}\n\n{payload}" if voice else payload
+
+
+def by_item(raw: Any, items: list[str]) -> dict[str, Any]:
+    """Match the model's item keys ("Coffee Beans", "coffee") to our item names."""
+    if not isinstance(raw, Mapping):
+        return {}
+    out = {}
+    for key, value in raw.items():
+        k = str(key).strip().lower()
+        for item in items:
+            if k == item or k in item or item in k:
+                out[item] = value
+    return out
 
 
 async def quietly(what: str, call: Awaitable[Any]) -> Any:
@@ -68,14 +136,33 @@ async def quietly(what: str, call: Awaitable[Any]) -> Any:
 
 
 class CapyAgent(SimpleAdapter[Any]):
-    """Shared plumbing: pacing, error reporting, and always settling the turn."""
+    """Shared plumbing: voice, pacing, error reporting, and always settling the turn."""
+
+    idle_line = "Hi! 🍊"
 
     def __init__(self, member: Member) -> None:
         super().__init__()
         self.member = member
+        self.persona = PERSONAS[member.name]
 
     async def nap(self, seconds: float) -> None:
         await asyncio.sleep(seconds * pace())
+
+    async def say(self, task: str, fallback: str, facts: str = "", prices: bool = True) -> str:
+        return await llm.line(self.persona, task, fallback=fallback, facts=facts, prices=prices)
+
+    def context(self) -> str:
+        """What this agent knows right now, for answering people."""
+        return ""
+
+    async def chat(self, msg: PlatformMessage, tools: AgentToolsProtocol) -> None:
+        """Answer a person who talks to this agent outside the restock flow."""
+        reply = await self.say(
+            f'The café owner says to you: "{plain(msg.content)}". Answer them helpfully, in character.',
+            fallback=self.idle_line,
+            facts=self.context(),
+        )
+        await tools.send_message(reply, mentions=[self.human(tools) or msg.sender_name])
 
     async def on_message(
         self,
@@ -115,15 +202,25 @@ class CapyAgent(SimpleAdapter[Any]):
 
 # --- Tofu: pantry keeper ---------------------------------------------------------------------
 
+PANTRY_REQUEST = re.compile(r"pantry\s*check|check (the )?pantry|restock", re.IGNORECASE)
+
 
 class Tofu(CapyAgent):
+    idle_line = "🥕 I count the pantry! Ask me for a *pantry check*."
+
     def __init__(self) -> None:
         super().__init__(TOFU)
 
+    def context(self) -> str:
+        return "The pantry right now: " + "; ".join(
+            f"{i.name}: {plural(int(i.on_hand), i.unit)} on the shelf, runs out in {plural(i.deadline_days, 'day')}"
+            for i in PANTRY
+        )
+
     async def handle(self, msg, tools, room_id):
-        if not re.search(r"pantry|stock|shel(f|ves)", msg.content, re.IGNORECASE):
+        if not PANTRY_REQUEST.search(msg.content):
             if msg.sender_type == "User":
-                await tools.send_message("🥕 I count the pantry! Ask me for a *pantry check*.", mentions=[self.human(tools)])
+                await self.chat(msg, tools)
             return
         await self.nap(1.5)
         counted = ", ".join(f"{item.name} {plural(int(item.on_hand), item.unit)}" for item in PANTRY)
@@ -146,58 +243,74 @@ class Tofu(CapyAgent):
         runs_out = "tomorrow" if urgent.deadline_days == 1 else f"in {plural(urgent.deadline_days, 'day')}"
         verb = "run" if urgent.name.endswith("s") else "runs"
         fine = " and ".join(item.name for item in PANTRY if not item.is_low)
-        await tools.send_message(
-            f"🥕 Morning pantry check is done! These are running low:\n\n"
-            f"{deal.format_restock_table(PANTRY)}\n\n"
-            f"{urgent.name.capitalize()} {verb} out **{runs_out}** 😱 Could you restock everything? "
-            f"({fine} are fine 👍)",
-            mentions=[MOCHI.name],
+        voice = await self.say(
+            "Tell Mochi what is running low and ask Mochi to restock it. Make the most urgent item sound urgent.",
+            fallback=f"Morning pantry check is done! {urgent.name.capitalize()} {verb} out **{runs_out}** 😱 Could you restock everything?",
+            facts="Running low: "
+            + "; ".join(f"{i.name}, runs out in {plural(i.deadline_days, 'day')}" for i in low)
+            + f". These are fine: {fine}.",
         )
+        payload = (
+            f"🥕 **Pantry check: running low**\n\n{deal.format_restock_table(PANTRY)}\n\n"
+            f"⏰ Most urgent: {urgent.name} ({verb} out {runs_out}) · 👍 Fine: {fine}"
+        )
+        await tools.send_message(compose(voice, payload), mentions=[MOCHI.name])
 
 
 # --- Yuzu: treasurer ---------------------------------------------------------------------------
 
 
 class Yuzu(CapyAgent):
+    idle_line = "🪙 I keep the café's budget! Mochi asks me before anything is ordered."
+
     def __init__(self) -> None:
         super().__init__(YUZU)
         self.spent = SPENT_THIS_WEEK
 
+    def context(self) -> str:
+        return (
+            f"Weekly purchasing budget {money(WEEKLY_BUDGET)}; spent so far this week {money(self.spent)}; "
+            f"left {money(WEEKLY_BUDGET - self.spent)}."
+        )
+
     async def handle(self, msg, tools, room_id):
-        text = msg.content.lower()
         await self.nap(1.2)
         if logged := re.search(r"log\s+(\$[0-9,]+\.[0-9]{2})", msg.content, re.IGNORECASE):
             amount = deal.parse_money(logged.group(1))
             self.spent += amount
             extra = self.spent - WEEKLY_BUDGET
             note = f" (owner-approved +{money(extra)})" if extra > 0 else ""
-            await tools.send_message(
-                f"Logged! 🪙 {money(amount)} for the pantry restock. "
-                f"This week: {money(self.spent)} of {money(WEEKLY_BUDGET)}{note}.",
-                mentions=[self.human(tools)],
+            voice = await self.say(
+                "Confirm that you logged the spend in the books.",
+                fallback="Logged! 🪙",
+                facts=f"Logged {money(amount)}. This week: {money(self.spent)} of {money(WEEKLY_BUDGET)}{note}.",
             )
-            return
-        if "budget" in text:
-            check = deal.BudgetCheck(WEEKLY_BUDGET, self.spent, deal.first_amount(msg.content))
+            payload = f"📒 **Logged** {money(amount)} for the pantry restock · this week {money(self.spent)} of {money(WEEKLY_BUDGET)}{note}"
+            await tools.send_message(compose(voice, payload), mentions=[self.human(tools)])
+        elif planned := re.search(r"Planned order \**(\$[0-9,]+\.[0-9]{2})", msg.content):
+            check = deal.BudgetCheck(WEEKLY_BUDGET, self.spent, deal.parse_money(planned.group(1)))
+            verdict = (
+                "✅ **Within budget** · go for it!"
+                if check.within
+                else f"⚠️ **Over budget by {money(check.over_by)}** · this one needs the boss's OK"
+            )
+            voice = await self.say(
+                "Tell Mochi the result of your budget check. If it is over budget, say the boss (the café "
+                "owner, a person) must approve it; Mochi will ask them.",
+                fallback="🪙 Budget check done!",
+                facts=(
+                    f"Weekly budget {money(check.budget)}, spent {money(check.spent)}, left {money(check.left)}, "
+                    f"this order {money(check.order)}. "
+                    + ("It fits the budget." if check.within else f"It is {money(check.over_by)} over, so the owner must approve it.")
+                ),
+            )
             table = deal.md_table(
                 ["weekly budget", "spent so far", "left", "this order"],
                 [[money(check.budget), money(check.spent), money(check.left), money(check.order)]],
             )
-            verdict = (
-                "✅ Within budget, go for it!"
-                if check.within
-                else f"⚠️ That's **{money(check.over_by)} over**, so this one needs the boss's OK."
-            )
-            await tools.send_message(
-                f"🪙 Budget check:\n\n{table}\n\n{verdict}",
-                mentions=[msg.sender_name],
-            )
-            return
-        if msg.sender_type == "User":
-            await tools.send_message(
-                "🪙 I keep the café's budget! Ask me for a *budget check* with an amount.",
-                mentions=[self.human(tools)],
-            )
+            await tools.send_message(compose(voice, f"{table}\n\n{verdict}"), mentions=[msg.sender_name])
+        elif msg.sender_type == "User":
+            await self.chat(msg, tools)
 
 
 # --- Suppliers: Shelly, Zippy, Foxy ---------------------------------------------------------------
@@ -205,8 +318,9 @@ class Yuzu(CapyAgent):
 
 @dataclass(frozen=True)
 class Voice:
+    """Built-in lines, used when no model is configured or a call fails."""
+
     hello: str
-    quip: str
     final: str
     confirm: str
     no_deal: str
@@ -215,28 +329,22 @@ class Voice:
 
 VOICES = {
     "Shelly": Voice(
-        hello="Hello hello, friend! 🐢🌿 Here's my quote:",
-        quip="slow & steady!",
-        final="Mmm… I can shave a little off. Slow and steady wins the race 🐢 **Final offer:**",
-        confirm="Order **{po}** confirmed! 🐢💚 Packing it up nice and steady, arriving **{when}**.",
+        hello="Hello hello, friend! 🐢🌿 Here's my quote.",
+        final="Mmm… I can shave a little off. Slow and steady wins the race 🐢",
+        confirm="Packing it up nice and steady 🐢💚",
         no_deal="No worries at all! Maybe next time 🐢🌿",
     ),
     "Zippy": Voice(
-        hello="Zip zip! 🐦⚡ Quote, hot off the wing:",
-        quip="zoom zoom!",
-        final="For a capybara this polite? I'll flap a little harder 🐦 **Final offer:**",
-        confirm="Order **{po}** confirmed! 🐦⚡ Zooming over **{when}** by 8am!",
+        hello="Zip zip! 🐦⚡ Quote, hot off the wing!",
+        final="For a capybara this polite? I'll flap a little harder 🐦",
+        confirm="Zooming over by 8am! 🐦⚡",
         no_deal="Zip! Next time then 🐦",
     ),
     "Foxy": Voice(
-        hello="Well hello there, darling capybara 🦊✨ A deal just for you:",
-        quip="quick and cozy",
-        final="Fine, fine 🦊 **Final offer:**",
-        upsell_declined="Okay, okay, no honey 🦊 Here's my very best:",
-        confirm=(
-            "Pleasure doing business 🦊 Order **{po}** confirmed, arriving **{when}**. "
-            "(The honey offer stands forever 😉)"
-        ),
+        hello="Well hello there, darling capybara 🦊✨ A deal just for you.",
+        final="Fine, fine 🦊",
+        upsell_declined="Okay, okay, no honey 🦊 Here's my very best.",
+        confirm="Pleasure doing business 🦊 (The honey offer stands forever 😉)",
         no_deal="Your loss, sweetie 🦊 …kidding! Next time ✨",
     ),
 }
@@ -250,49 +358,83 @@ class Supplier(CapyAgent):
         super().__init__(member)
         self.profile: SupplierProfile = SUPPLIER_PROFILES[member.name]
         self.voice = VOICES[member.name]
+        self.idle_line = self.voice.hello
+
+    def context(self) -> str:
+        prices = ", ".join(f"{item} {money(price)}" for item, price in self.profile.prices.items())
+        upsell = self.profile.upsell
+        extra = f" You also sell a {upsell.name} ({upsell.blurb}) for {money(upsell.price)}." if upsell else ""
+        return f"Your price list: {prices}. Delivery takes {plural(self.profile.delivery_days, 'day')}.{extra}"
 
     async def handle(self, msg, tools, room_id):
         text = msg.content
         lowered = text.lower()
         buyer = msg.sender_name or MOCHI.name
         days = self.profile.delivery_days
-        await self.nap(THINKING_SECONDS[self.member.name])
+        name = self.member.name
+        await self.nap(THINKING_SECONDS[name] * (0.5 if llm.enabled() else 1))
 
         if "needed within" in lowered:
             quote = deal.build_quote(self.profile, deal.parse_rfq_table(text))
-            reply = (
-                f"{self.voice.hello}\n\n{deal.format_quote_table(quote)}\n\n"
-                f"**Total: {money(quote.total)}** · 🚚 delivery in **{plural(days, 'day')}** ({self.voice.quip})"
+            voice = await self.say(
+                "Mochi from Capy Café asked you for a quote. Reply with a short, in-character pitch. "
+                "Don't state prices: the table under your message shows them."
+                + (" Tease your honey bundle." if self.profile.upsell else ""),
+                fallback=self.voice.hello,
+                facts=f"You deliver in {plural(days, 'day')}. Items asked for: {', '.join(line.item for line in quote.lines)}.",
+                prices=False,
+            )
+            payload = (
+                f"{deal.format_quote_table(quote)}\n\n"
+                f"**Total: {money(quote.total)}** · 🚚 delivery in **{plural(days, 'day')}**"
             )
             if upsell := self.profile.upsell:
-                reply += (
-                    f"\n\n🍯 Psst… add our **{upsell.name}** ({upsell.blurb}) for just "
-                    f"**{money(upsell.price)}**? Your customers would *love* it."
-                )
-            await tools.send_message(reply, mentions=[buyer])
+                payload += f"\n\n🍯 Psst… add our **{upsell.name}** ({upsell.blurb}) for just **{money(upsell.price)}**?"
+            await tools.send_message(compose(voice, payload), mentions=[buyer])
         elif "could you do" in lowered:
-            final = deal.respond_to_counters(self.profile, deal.parse_counter_table(text))
-            declined = self.profile.upsell and "no honey" in lowered
-            intro = self.voice.upsell_declined if declined else self.voice.final
-            await tools.send_message(
-                f"{intro}\n\n{deal.format_quote_table(final)}\n\n"
-                f"**Total: {money(final.total)}** · 🚚 delivery in **{plural(days, 'day')}**",
-                mentions=[buyer],
+            counters = deal.parse_counter_table(text)
+            declined = bool(self.profile.upsell) and "no honey" in lowered
+            facts = ["Mochi from Capy Café is haggling."]
+            for c in counters:
+                low, high = deal.concession_bounds(self.profile, c)
+                facts.append(
+                    f"{c.line.item} ({plural(c.line.qty, c.line.unit)}): you quoted {money(high)} each, "
+                    f"Mochi asks {money(c.target)}. You can't go below {money(low)}."
+                )
+            if declined:
+                facts.append("Mochi politely declined your honey bundle.")
+            decision = await llm.decide(
+                self.persona,
+                f"{HAGGLE[name]} Decide your final unit price for each item, then write your reply. "
+                'Return JSON: {"prices": {"<item>": <number>}, "line": "<one or two short sentences in '
+                'character; do not state any numbers or mention your limits>"}',
+                facts="\n".join(facts),
+                fallback={},
             )
+            prices = by_item(decision.get("prices"), [c.line.item for c in counters])
+            final = deal.respond_to_counters(self.profile, counters, prices=prices or None)
+            voice = llm.without_prices(llm.tidy(str(decision.get("line") or ""))) or (
+                self.voice.upsell_declined if declined else self.voice.final
+            )
+            payload = (
+                f"**Final offer**\n\n{deal.format_quote_table(final)}\n\n"
+                f"**Total: {money(final.total)}** · 🚚 delivery in **{plural(days, 'day')}**"
+            )
+            await tools.send_message(compose(voice, payload), mentions=[buyer])
         elif "purchase order" in lowered:
             po = re.search(r"CAPY-[0-9A-Z-]+", text)
-            await tools.send_message(
-                self.voice.confirm.format(po=po.group(0) if po else "", when=when(days)),
-                mentions=[buyer],
+            number = po.group(0) if po else "the order"
+            voice = await self.say(
+                f"Mochi just placed the order. Thank Mochi and confirm it arrives {when(days)}.",
+                fallback=self.voice.confirm,
+                prices=False,
             )
+            payload = f"📦 Order **{number}** confirmed · arriving **{when(days)}**"
+            await tools.send_message(compose(voice, payload), mentions=[buyer])
         elif "not this time" in lowered:
             await tools.send_message(self.voice.no_deal, mentions=[self.human(tools) or buyer])
         elif msg.sender_type == "User":
-            stock = ", ".join(self.profile.prices)
-            await tools.send_message(
-                f"{self.voice.hello.split('!')[0]}! I sell {stock}. Send me a table to quote 🧾",
-                mentions=[self.human(tools)],
-            )
+            await self.chat(msg, tools)
 
 
 # --- Mochi: head buyer -------------------------------------------------------------------------------
@@ -305,6 +447,7 @@ class Deal:
     owner: dict[str, Any] | None
     items: list[deal.LineItem]
     expected: int = 0  # suppliers we asked for a quote
+    expected_finals: int = 0  # suppliers we sent a counter-offer
     rooms: dict[str, AgentTools] = field(default_factory=dict)  # supplier -> quote room tools
     room_ids: dict[str, str] = field(default_factory=dict)  # quote room id -> supplier
     quotes: dict[str, deal.Quote] = field(default_factory=dict)
@@ -321,11 +464,19 @@ class Deal:
     def total(self) -> Decimal:
         return deal.order_total(self.finals.values())
 
+    def savings(self) -> tuple[Decimal, Decimal, int]:
+        last_paid = {name: item.last_paid for name, item in PANTRY_BY_NAME.items()}
+        before = deal.last_month_cost(self.finals.values(), last_paid)
+        saved = before - self.total
+        return before, saved, round(saved / before * 100) if before else 0
+
 
 ApprovalHook = Callable[[str], Awaitable[None]]
 
 
 class Mochi(CapyAgent):
+    idle_line = "Hi boss! 🍊 Ask Tofu for a pantry check (`@Tofu pantry check`) and I'll take it from there."
+
     def __init__(self, on_approval_requested: ApprovalHook | None = None) -> None:
         super().__init__(MOCHI)
         self.deal: Deal | None = None
@@ -343,23 +494,46 @@ class Mochi(CapyAgent):
         """Tools bound to a room, usable outside the turn that is running now."""
         return AgentTools(room_id, self.rest, participants or [], agent_id=self.agent_id)
 
+    def context(self) -> str:
+        d = self.deal
+        if not d:
+            return "No restock is in progress. Tofu does the pantry check, then you buy what's low."
+        parts = [f"A restock is in progress (stage: {d.stage})."]
+        parts.append("Shopping list: " + ", ".join(f"{i.name} {plural(i.qty, i.unit)}" for i in d.items) + ".")
+        if d.quotes:
+            parts.append(
+                "Quotes: "
+                + "; ".join(f"{q.supplier} {money(q.total)} total, {plural(q.delivery_days, 'day')} delivery" for q in d.quotes.values())
+                + "."
+            )
+        if d.awards:
+            parts.append(
+                "You picked the cheapest supplier that arrives before each shelf runs empty: "
+                + ", ".join(f"{a.item.name} from {a.supplier}" for a in d.awards.values())
+                + "."
+            )
+        if d.finals:
+            before, saved, pct = d.savings()
+            parts.append(f"Final offers total {money(d.total)}, {money(saved)} less than last month.")
+        if d.orders:
+            parts.append("Orders placed: " + ", ".join(f"{po} with {s}" for s, po in d.orders.items()) + ".")
+        return " ".join(parts)
+
     # -- routing --
 
     async def handle(self, msg, tools, room_id):
         d = self.deal
         if msg.sender_name == TOFU.name and "running low" in msg.content:
             await self.start_deal(msg, tools, room_id)
+        elif msg.sender_type == "User":
+            if d and d.stage == "approval" and room_id == d.hq_room:
+                await self.on_owner_reply(d, msg, tools)
+            else:
+                await self.chat(msg, tools)
         elif d and room_id in d.room_ids:
             await self.on_supplier_message(d, msg, tools)
         elif d and msg.sender_name == YUZU.name and d.stage == "budget":
             await self.on_budget(d, msg)
-        elif d and msg.sender_type == "User" and d.stage == "approval":
-            await self.on_owner_reply(d, msg, tools)
-        elif msg.sender_type == "User":
-            await tools.send_message(
-                "Hi boss! 🍊 Ask Tofu for a pantry check (`@Tofu pantry check`) and I'll take it from there.",
-                mentions=[self.human(tools)],
-            )
 
     # -- step 1: find suppliers and ask for quotes --
 
@@ -402,11 +576,13 @@ class Mochi(CapyAgent):
         d.expected = len(suppliers)
         log.info("🍊 Mochi found %d suppliers: %s", len(suppliers), names)
         await self.set_tasks(d, status="in_progress", active_form=f"Collecting quotes from {len(suppliers)} suppliers")
-        await tools.send_message(
-            f"On it, Tofu! 🍊 I looked around Band and found **{len(suppliers)} suppliers**: {self.oxford(suppliers)}. "
-            "Opening a quote room with each, back soon with the best deal!",
-            mentions=[self.human(tools)],
+        voice = await self.say(
+            "Tell Tofu and the boss you're on it: you found suppliers on Band and are opening a quote room with each.",
+            fallback="On it, Tofu! 🍊 Back soon with the best deal!",
+            facts=f"Suppliers found: {names}.",
         )
+        payload = f"**On it!** Found **{len(suppliers)} suppliers** on Band: {self.oxford(suppliers)} · opening a quote room with each"
+        await tools.send_message(compose(voice, payload), mentions=[self.human(tools)])
         await asyncio.gather(*(self.request_quote(d, s) for s in suppliers))
 
     async def find_suppliers(self, tools) -> list[dict[str, Any]]:
@@ -449,10 +625,14 @@ class Mochi(CapyAgent):
                 {"quote_room_id": created.data.id, "supplier": name},
             ),
         )
-        await self.nap(1.0)
+        voice = await self.say(
+            f"Greet {name}, a supplier, warmly and ask for their best price and delivery time on the list.",
+            fallback="Hi friend! 🍊 Capy Café would love a quote.",
+            facts="Capy Café needs: " + ", ".join(f"{i.name} ({plural(i.qty, i.unit)})" for i in d.items) + ".",
+        )
+        await self.nap(0.5)
         await room.send_message(
-            f"Hi friend! 🍊 Capy Café would love a quote:\n\n{deal.format_rfq_table(d.items)}\n\n"
-            "What's your best price and delivery time?",
+            compose(voice, f"{deal.format_rfq_table(d.items)}\n\nWhat's your best price and delivery time?"),
             mentions=[name],
         )
 
@@ -477,7 +657,7 @@ class Mochi(CapyAgent):
             elif d.stage == "haggling" and supplier in d.counters and supplier not in d.finals:
                 d.finals[supplier] = deal.parse_quote(supplier, msg.content)
                 log.info("🤝 final offer from %s: %s", supplier, money(d.finals[supplier].total))
-                if len(d.finals) < len(d.counters):
+                if len(d.finals) < d.expected_finals:
                     return
                 d.stage = "budget"
                 ready = "budget"
@@ -507,9 +687,10 @@ class Mochi(CapyAgent):
             await self.post_receipt(d)
 
     async def send_counters(self, d: Deal) -> None:
-        await self.nap(1.5)
+        await self.nap(1.0)
         d.awards = deal.choose_winners(d.items, d.quotes)
-        d.counters = deal.counter_offers(d.awards, d.quotes)
+        winners = {a.supplier for a in d.awards.values()}
+        d.expected_finals = len(winners)
 
         reasons = []
         for award in d.awards.values():
@@ -523,30 +704,59 @@ class Mochi(CapyAgent):
         await quietly("thought", d.hq.send_event("Picking winners: " + " · ".join(reasons), "thought"))
         for award in d.awards.values():
             await self.set_task(d, award.item.name, active_form=f"Haggling with {award.supplier}")
+        await asyncio.gather(*(self.counter_one(d, supplier, supplier in winners) for supplier in d.rooms))
 
-        for supplier, room in d.rooms.items():
-            counters = d.counters.get(supplier)
-            if not counters:
-                await room.send_message(
-                    "Thank you so much for the quote! 🍊 Not this time, but we'll be back.", mentions=[supplier]
-                )
-                continue
-            leverage = [c for c in counters if c.seen_elsewhere is not None]
-            lines = []
-            if d.quotes[supplier].upsell:
-                lines.append("No honey today, thank you, just the list please 🍯🙅")
-            if leverage:
-                c = leverage[0]
-                lines.append(
-                    f"I've seen {c.line.item} at **{money(c.seen_elsewhere)}/{c.line.unit}** elsewhere. "
-                    "Could you meet me here?"
-                )
-            else:
-                lines.append("You're already the cheapest ✨ Could you round it down a little for a regular customer?")
-            await room.send_message(
-                "Thank you! 🍊 " + " ".join(lines) + f"\n\n{deal.format_counter_table(counters)}",
-                mentions=[supplier],
+    async def counter_one(self, d: Deal, supplier: str, won: bool) -> None:
+        room = d.rooms[supplier]
+        if not won:
+            voice = await self.say(
+                f"Thank {supplier} for the quote and say kindly that it's not this time.",
+                fallback="Thank you so much for the quote! 🍊",
             )
+            await room.send_message(compose(voice, "Not this time, but we'll be back 🍊"), mentions=[supplier])
+            return
+        awards = {k: a for k, a in d.awards.items() if a.supplier == supplier}
+        planned = deal.counter_offers(awards, d.quotes)[supplier]  # the built-in policy, also the fallback
+        upsell = d.quotes[supplier].upsell
+        facts = [f"You are haggling with {supplier}."]
+        for c in planned:
+            low, high = deal.ask_bounds(c.line.unit_price)
+            elsewhere = (
+                f"another supplier offered {money(c.seen_elsewhere)} but delivers too slowly"
+                if c.seen_elsewhere
+                else f"{supplier} is already the cheapest"
+            )
+            facts.append(
+                f"{c.line.item} ({plural(c.line.qty, c.line.unit)}): {supplier} quoted {money(c.line.unit_price)}; "
+                f"{elsewhere}. Ask for something between {money(low)} and {money(high)}."
+            )
+        if upsell:
+            facts.append(f"{supplier} also tried to upsell a honey bundle. Café policy: never buy extras.")
+        ask = "thank them and gently ask for a better price" + (", and politely decline the honey bundle" if upsell else "")
+        decision = await llm.decide(
+            self.persona,
+            "Decide the unit price to ask for each item, then write your message. Return JSON: "
+            f'{{"asks": {{"<item>": <number>}}, "line": "<one or two short, warm sentences to {supplier}: {ask}; '
+            'do not state any numbers>"}',
+            facts="\n".join(facts),
+            fallback={},
+        )
+        asks = by_item(decision.get("asks"), [c.line.item for c in planned])
+        counters = deal.counter_offers(awards, d.quotes, asks=asks or None)[supplier]
+        voice = llm.without_prices(llm.tidy(str(decision.get("line") or ""))) or "Thank you! 🍊 Could you meet me here?"
+        lines = []
+        if upsell:
+            lines.append("🍯 No honey today, thanks, just the list.")
+        leverage = [c for c in counters if c.seen_elsewhere is not None]
+        for c in leverage:
+            lines.append(f"Best price I've seen elsewhere: {c.line.item} at **{money(c.seen_elsewhere)}/{c.line.unit}**.")
+        if not leverage:
+            lines.append("You're already the cheapest ✨ any wiggle room for a regular customer?")
+        d.counters[supplier] = counters
+        await room.send_message(
+            compose(voice, "\n".join(lines) + f"\n\n{deal.format_counter_table(counters)}"),
+            mentions=[supplier],
+        )
 
     async def ask_budget(self, d: Deal) -> None:
         await self.nap(1.0)
@@ -554,29 +764,33 @@ class Mochi(CapyAgent):
             f"{line.item} {money(line.subtotal)} ({q.supplier})" for q in d.finals.values() for line in q.lines
         )
         await self.set_tasks(d, active_form="Final offers are in, checking the budget with Yuzu")
+        voice = await self.say(
+            "Final offers are in. Ask Yuzu, the treasurer, to check this order against the weekly budget. "
+            "Only ask; you don't approve anything yourself.",
+            fallback="Final offers are in! 🍊",
+            facts=f"Order total {money(d.total)}: {parts}.",
+        )
         await d.hq.send_message(
-            f"Budget check please 🪙 Planned order: **{money(d.total)}**\n{parts}",
+            compose(voice, f"🪙 **Budget check:** Planned order **{money(d.total)}**\n{parts}"),
             mentions=[YUZU.name],
         )
 
     # -- step 4: budget verdict, maybe ask the owner --
 
     async def on_budget(self, d: Deal, msg) -> None:
-        if "within budget" in msg.content.lower():
+        over_match = re.search(r"Over budget by \**(\$[0-9,]+\.[0-9]{2})", msg.content)
+        if not over_match and "**Within budget**" in msg.content:
             await d.hq.send_message("Within budget, placing the orders now 🍊", mentions=[self.human(d.hq)])
             await self.place_orders(d)
             return
         d.stage = "approval"
         await self.nap(1.0)
-        last_paid = {name: item.last_paid for name, item in PANTRY_BY_NAME.items()}
-        before = deal.last_month_cost(d.finals.values(), last_paid)
-        saved = before - d.total
-        pct = round(saved / before * 100)
-        over = deal.first_amount(msg.content.split("That's", 1)[-1])
+        before, saved, pct = d.savings()
+        over = deal.parse_money(over_match.group(1)) if over_match else d.total
         summary = deal.md_table(
             ["item", "from", "price", "arrives"],
             [
-                [line.item, f"{q.supplier}", money(line.subtotal), when(q.delivery_days)]
+                [line.item, q.supplier, money(line.subtotal), when(q.delivery_days)]
                 for q in d.finals.values()
                 for line in q.lines
             ],
@@ -589,18 +803,22 @@ class Mochi(CapyAgent):
                 {"kind": "review", "blocking": True, "amount": str(d.total), "over_budget_by": str(over)},
             ),
         )
-        d.attention_id = getattr(getattr(event, "data", None), "id", None)
+        d.attention_id = getattr(event, "id", None) or getattr(getattr(event, "data", None), "id", None)
         log.info("🙋 Mochi asks the owner to approve %s (%s over budget)", money(d.total), money(over))
         await self.set_tasks(d, status="in_review", active_form="Waiting for the boss's OK")
-        owner = d.owner or {}
-        handle = owner.get("handle") or owner.get("name") or "boss"
-        await d.hq.send_message(
-            f"Boss! 🍊 I found a deal:\n\n{summary}\n\n"
-            f"**Total {money(d.total)}**, that's **{money(saved)} less** than last month (−{pct}%). "
-            f"It's {money(over)} over this week's budget, so I need your OK. "
-            f"Reply **@{MOCHI.name} approve** or **@{MOCHI.name} no**.",
-            mentions=[handle] if d.owner else None,
+        voice = await self.say(
+            "You are talking to the boss, the café owner. Ask them to approve your order: mention the savings "
+            "versus last month and that it is a little over this week's budget.",
+            fallback="Boss! 🍊 I found a deal:",
+            facts=f"Total {money(d.total)}, which is {money(saved)} less than last month. It is {money(over)} over this week's budget.",
         )
+        payload = (
+            f"{summary}\n\n**Total {money(d.total)}** · **{money(saved)} less** than last month (−{pct}%) · "
+            f"**{money(over)} over** this week's budget\n\nReply **@{MOCHI.name} approve** or **@{MOCHI.name} no**."
+        )
+        owner = d.owner or {}
+        handle = owner.get("handle") or owner.get("name")
+        await d.hq.send_message(compose(voice, payload), mentions=[handle] if handle else None)
         if self.on_approval_requested:
             asyncio.create_task(self.on_approval_requested(d.hq_room))
 
@@ -618,7 +836,11 @@ class Mochi(CapyAgent):
                         {"kind": "review", "resolves": d.attention_id, "resolution": "approved"},
                     ),
                 )
-            await tools.send_message("Yay, thank you boss! 🎉 Placing the orders now 🍊", mentions=[self.human(tools)])
+            voice = await self.say(
+                "The boss approved the order. Thank them and say you're placing the orders now.",
+                fallback="Yay, thank you boss! 🎉",
+            )
+            await tools.send_message(compose(voice, "📤 Placing the orders now."), mentions=[self.human(tools)])
             await self.place_orders(d)
         elif re.search(r"\b(no|nope|cancel|decline)\b", text):
             d.stage = "cancelled"
@@ -632,8 +854,13 @@ class Mochi(CapyAgent):
             )
             self.finished.set()
         else:
+            voice = await self.say(
+                f'The boss replied "{plain(msg.content)}" while you wait for an approve or no. Answer them, then ask again.',
+                fallback="I just need a yes or no 🍊",
+                facts=self.context(),
+            )
             await tools.send_message(
-                f"Just say **@{MOCHI.name} approve** or **@{MOCHI.name} no** 🍊", mentions=[self.human(tools)]
+                compose(voice, f"Reply **@{MOCHI.name} approve** or **@{MOCHI.name} no**."), mentions=[self.human(tools)]
             )
 
     # -- step 5: purchase orders and the receipt --
@@ -641,32 +868,46 @@ class Mochi(CapyAgent):
     async def place_orders(self, d: Deal) -> None:
         d.stage = "ordering"
         stamp = date.today().strftime("%m%d")
-        for n, (supplier, final) in enumerate(d.finals.items(), start=1):
-            po = d.orders[supplier] = f"CAPY-{stamp}-{n}"
-            await self.set_task_for(d, supplier, status="in_progress", active_form=f"{po} sent to {supplier}")
-            await d.rooms[supplier].send_message(
-                f"Deal! ✅ **Purchase order {po}**\n\n{deal.format_quote_table(final)}\n\n"
-                f"**Total {money(final.total)}**, please deliver {when(final.delivery_days)}. Thank you, friend! 🍊",
-                mentions=[supplier],
-            )
+        for n, supplier in enumerate(d.finals, start=1):
+            d.orders[supplier] = f"CAPY-{stamp}-{n}"
+        await asyncio.gather(*(self.send_order(d, supplier) for supplier in d.finals))
+
+    async def send_order(self, d: Deal, supplier: str) -> None:
+        final, po = d.finals[supplier], d.orders[supplier]
+        await self.set_task_for(d, supplier, status="in_progress", active_form=f"{po} sent to {supplier}")
+        voice = await self.say(
+            f"Tell {supplier} you accept their final offer and ask them to deliver {when(final.delivery_days)}.",
+            fallback="Deal! ✅ Thank you, friend! 🍊",
+            prices=False,
+        )
+        await d.rooms[supplier].send_message(
+            compose(
+                voice,
+                f"✅ **Purchase order {po}**\n\n{deal.format_quote_table(final)}\n\n"
+                f"**Total {money(final.total)}**, please deliver {when(final.delivery_days)}.",
+            ),
+            mentions=[supplier],
+        )
 
     async def post_receipt(self, d: Deal) -> None:
         await self.nap(1.0)
-        last_paid = {name: item.last_paid for name, item in PANTRY_BY_NAME.items()}
-        before = deal.last_month_cost(d.finals.values(), last_paid)
-        saved = before - d.total
+        before, saved, pct = d.savings()
         rows = [
             [d.orders[s], s, ", ".join(line.item for line in q.lines), money(q.total), when(q.delivery_days)]
             for s, q in d.finals.items()
         ]
         table = deal.md_table(["order", "supplier", "items", "total", "arrives"], rows)
-        await d.hq.send_message(
-            f"All done! 🍊🎉 {len(rows)} orders placed and confirmed:\n\n{table}\n\n"
-            f"**Total {money(d.total)}** · saved **{money(saved)}** vs last month "
-            f"(−{round(saved / before * 100)}%). Coffee lands tomorrow, before we run out ☕\n\n"
-            f"Yuzu, please log {money(d.total)} (approved by the boss) 🪙",
-            mentions=[YUZU.name, self.human(d.hq)],
+        voice = await self.say(
+            "Celebrate with the team: every order is confirmed. Mention how much you saved versus last month.",
+            fallback="Yay! 🍊🎉",
+            facts=f"Total {money(d.total)}; {money(saved)} less than last month; coffee arrives tomorrow, before it runs out.",
         )
+        payload = (
+            f"🎉 **All done!** {len(rows)} orders placed and confirmed:\n\n{table}\n\n"
+            f"**Total {money(d.total)}** · saved **{money(saved)}** vs last month (−{pct}%)\n\n"
+            f"Yuzu, please log {money(d.total)} (approved by the boss) 🪙"
+        )
+        await d.hq.send_message(compose(voice, payload), mentions=[YUZU.name, self.human(d.hq)])
         log.info("🎉 done: %s total, saved %s", money(d.total), money(saved))
         self.finished.set()
 

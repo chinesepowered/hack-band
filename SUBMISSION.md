@@ -27,9 +27,13 @@ CapyBargain is a company run by six agents on Band:
 - The **owner** is a human. When an order goes over budget, Mochi raises an attention event and waits for
   a one-word reply.
 
-In the recorded run, the herd restocked coffee, oat milk and flour for **$412.80**. That's **$53.90 less
+Every agent thinks with an LLM (Qwen3.8-27B): it writes their lines in character and makes the real
+negotiation moves, while code holds the guardrails.
+
+In the recorded run, the herd restocked coffee, oat milk and flour for **$413.10**. That's **$53.60 less
 than last month**. Coffee was the urgent item, so it went to the only supplier who could deliver tomorrow.
-The run took **35 seconds** and produced 47 Band events across 4 rooms, with one human approval.
+The run took **48 seconds** and produced 48 Band events across 4 rooms, with one human approval. You can
+also chat with any agent in the Band app, and it answers from what it knows about the deal.
 
 The **Capy Onsen** UI turns each Band room into a hot spring: the characters bob, show typing dots and
 thought bubbles, and the quote board, task board and budget meter fill in as the agents work. It can
@@ -47,8 +51,11 @@ replay a recorded run or follow a live one straight from Band.
 - **Thought and task events** record Mochi's reasoning and link HQ to each quote room, so one HQ room id
   is enough to rebuild the whole story from Band's audit trail.
 - **Human API:** used for the owner's side and to read runs back for the UI and video.
-- The negotiation logic (`capybargain/deal.py`) is pure and unit tested. Agents exchange markdown tables
-  that are readable to the humans in the room and parseable by the agents.
+- **LLM brains with guardrails.** Each message is the agent's own voice (written by the LLM) plus a payload
+  written by code: the tables and markers the other agents parse. Mochi's LLM picks what to ask each supplier,
+  and each supplier's LLM decides how far to bend. `capybargain/deal.py` clamps every price to that side's
+  limits (unit tested). Picking winners and checking the budget stay in code, and anything over budget always
+  goes to the human. Any OpenAI-compatible endpoint works, and agents fall back to built-in lines if it fails.
 - The UI and the video share one renderer, and every frame is a pure function of time. The video replays
   the real transcript, with each Band message landing on the narration line that describes it. All art
   and music are original: the characters are hand-built SVG, and the music-box score is synthesized in Python.
@@ -62,9 +69,15 @@ replay a recorded run or follow a live one straight from Band.
   current one, so each handler ends with `band_no_reply` when it has nothing to say.
 - **Concurrent quotes.** Three quote rooms answer at once, so Mochi's state transitions are guarded by a lock
   and track how many quotes it's waiting for.
+- **Keeping an LLM honest about money.** A supplier once said "10.92 is my very best" when its clamped price was
+  $10.95. Lines that sit on a price table now drop any sentence that states a price.
+- **There's no capybara emoji.** Left alone, the model signs off as a beaver 🦫 or a hamster 🐹. The capybaras'
+  prompts now say so.
+- **The inference endpoint sometimes returns a random 500.** Calls retry quickly, and every line has a
+  built-in fallback.
 
 ## What's next
 
 - Put each supplier in its own company's Band account and connect them with contact requests.
-- Swap the suppliers' scripted brains for LLM adapters so real vendors can bring their own agents.
+- Let real vendors bring their own agents, on any framework Band supports.
 - Feed the pantry from a point-of-sale system, and let the owner approve from Slack through Band's Slack adapter.

@@ -1,9 +1,9 @@
 {
- "captured_at": "2026-10-19T22:03:57.360823+00:00",
- "hq_room_id": "bb97ac00-595b-469a-8638-2fdbdadc6ef7",
+ "captured_at": "2026-10-19T22:41:56.867571+00:00",
+ "hq_room_id": "d04c068c-69af-449b-8b66-4297f40414ee",
  "rooms": [
   {
-   "id": "bb97ac00-595b-469a-8638-2fdbdadc6ef7",
+   "id": "d04c068c-69af-449b-8b66-4297f40414ee",
    "title": "☕ Capy Café HQ",
    "participants": [
     {
@@ -33,7 +33,7 @@
    ],
    "messages": [
     {
-     "id": "ca7903f4-b38d-47c1-8f41-0f78b11607de",
+     "id": "735aa3a5-b50f-4b90-898e-13cce98382f6",
      "content": "Mochi joined the conversation",
      "message_type": "participant",
      "sender_type": "Agent",
@@ -45,10 +45,10 @@
       "participant_name": "Mochi",
       "participant_type": "Agent"
      },
-     "inserted_at": "2026-10-19T22:03:18.588635+00:00"
+     "inserted_at": "2026-10-19T22:41:06.660645+00:00"
     },
     {
-     "id": "653a7306-4901-4037-8505-8c5f3ef61a3e",
+     "id": "62f98619-03b6-4162-8c89-299d3e43e6fa",
      "content": "Tofu joined the conversation",
      "message_type": "participant",
      "sender_type": "Agent",
@@ -60,10 +60,10 @@
       "participant_name": "Tofu",
       "participant_type": "Agent"
      },
-     "inserted_at": "2026-10-19T22:03:18.685036+00:00"
+     "inserted_at": "2026-10-19T22:41:06.770283+00:00"
     },
     {
-     "id": "ccece562-9432-4625-9e80-ab77144e56b4",
+     "id": "ddff37bb-1db9-4151-863b-f91de0faf7ed",
      "content": "Yuzu joined the conversation",
      "message_type": "participant",
      "sender_type": "Agent",
@@ -75,10 +75,10 @@
       "participant_name": "Yuzu",
       "participant_type": "Agent"
      },
-     "inserted_at": "2026-10-19T22:03:18.769702+00:00"
+     "inserted_at": "2026-10-19T22:41:06.965896+00:00"
     },
     {
-     "id": "d1808e3e-b8c9-40d3-883f-5285a0c2353d",
+     "id": "023129e6-747a-4bcb-a064-6299c8cba620",
      "content": "@[[d9109ee6-342e-4c8e-b397-5aaacc40ec5e]] Good morning! ☀️ Pantry check, please 🍊",
      "message_type": "text",
      "sender_type": "User",
@@ -90,14 +90,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:21.529492Z",
-          "started_at": "2026-10-19T22:03:19.252995Z",
+          "completed_at": "2026-10-19T22:41:14.109414Z",
+          "started_at": "2026-10-19T22:41:07.402023Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:19.252995Z",
-        "processed_at": "2026-10-19T22:03:21.529492Z",
+        "delivered_at": "2026-10-19T22:41:07.402023Z",
+        "processed_at": "2026-10-19T22:41:14.109414Z",
         "status": "processed"
        }
       },
@@ -113,21 +113,21 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:18.886812+00:00"
+     "inserted_at": "2026-10-19T22:41:07.073996+00:00"
     },
     {
-     "id": "dbc2787e-71e7-4b3c-bafb-eef49c11944e",
+     "id": "c19edc2b-fe44-4595-bace-fc36d16127ec",
      "content": "Counting the shelves… coffee beans 2 kg, oat milk 12 cartons, flour 3 bags, cocoa 5 tins, matcha 4 tins",
      "message_type": "thought",
      "sender_type": "Agent",
      "sender_name": "Tofu",
      "sender_id": "d9109ee6-342e-4c8e-b397-5aaacc40ec5e",
      "metadata": {},
-     "inserted_at": "2026-10-19T22:03:21.045892+00:00"
+     "inserted_at": "2026-10-19T22:41:09.072097+00:00"
     },
     {
-     "id": "a50ddfc2-a064-4c42-932c-99ddaa272936",
-     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] 🥕 Morning pantry check is done! These are running low:\n\n| item | on shelf | order | runs out in |\n|---|---|---|---|\n| coffee beans | 2 kg | 10 kg | 1 day |\n| oat milk | 12 cartons | 36 cartons | 3 days |\n| flour | 3 bags | 7 bags | 6 days |\n\nCoffee beans run out **tomorrow** 😱 Could you restock everything? (cocoa and matcha are fine 👍)",
+     "id": "15273047-5b7c-4913-8784-76092dd802ab",
+     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] Oh no, the coffee beans are gone in just 1 day! ☕ Please restock that and the oat milk and flour soon.\n\n🥕 **Pantry check: running low**\n\n| item | on shelf | order | runs out in |\n|---|---|---|---|\n| coffee beans | 2 kg | 10 kg | 1 day |\n| oat milk | 12 cartons | 36 cartons | 3 days |\n| flour | 3 bags | 7 bags | 6 days |\n\n⏰ Most urgent: coffee beans (run out tomorrow) · 👍 Fine: cocoa and matcha",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Tofu",
@@ -138,14 +138,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:25.640498Z",
-          "started_at": "2026-10-19T22:03:21.414705Z",
+          "completed_at": "2026-10-19T22:41:20.596608Z",
+          "started_at": "2026-10-19T22:41:14.026596Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:21.414705Z",
-        "processed_at": "2026-10-19T22:03:25.640498Z",
+        "delivered_at": "2026-10-19T22:41:14.026596Z",
+        "processed_at": "2026-10-19T22:41:20.596608Z",
         "status": "processed"
        }
       },
@@ -161,10 +161,10 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:21.344838+00:00"
+     "inserted_at": "2026-10-19T22:41:13.928169+00:00"
     },
     {
-     "id": "5919bc73-092f-495b-9944-5b33bcede794",
+     "id": "dabb15d6-d32c-41b0-9781-db2f0c2679b0",
      "content": "band_lookup_peers → 3 suppliers (Foxy 🦊, Shelly 🐢, Zippy 🐦) out of all my peers",
      "message_type": "thought",
      "sender_type": "Agent",
@@ -177,11 +177,11 @@
        "Zippy"
       ]
      },
-     "inserted_at": "2026-10-19T22:03:22.969799+00:00"
+     "inserted_at": "2026-10-19T22:41:15.709571+00:00"
     },
     {
-     "id": "37891340-9d83-4023-bcd3-f75a205f1a83",
-     "content": "@[[34a5caf2-6c3a-48ab-9e4e-c97d33ea0b26]] On it, Tofu! 🍊 I looked around Band and found **3 suppliers**: Foxy 🦊, Shelly 🐢 and Zippy 🐦. Opening a quote room with each, back soon with the best deal!",
+     "id": "ab3ec9ab-1df2-4f2a-9c16-c1f6c4f94a08",
+     "content": "@[[34a5caf2-6c3a-48ab-9e4e-c97d33ea0b26]] Thanks, Tofu and boss! I found Foxy, Shelly, and Zippy on Band. I am opening a quote room with each now. ☕🍊\n\n**On it!** Found **3 suppliers** on Band: Foxy 🦊, Shelly 🐢 and Zippy 🐦 · opening a quote room with each",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Mochi",
@@ -198,60 +198,60 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:23.284316+00:00"
+     "inserted_at": "2026-10-19T22:41:16.910397+00:00"
     },
     {
-     "id": "090d0713-b3c1-4646-90ca-78e8962c85e1",
+     "id": "7895f1ff-e44d-4956-83da-878cf8c106b2",
      "content": "Opened a quote room with Foxy 🦊",
      "message_type": "task",
      "sender_type": "Agent",
      "sender_name": "Mochi",
      "sender_id": "73fd3557-fd4e-4246-8f60-1f58bdff1b26",
      "metadata": {
-      "quote_room_id": "2edc41ac-5b94-423b-a16d-76abc03123c2",
+      "quote_room_id": "21158bf0-c2ba-4285-8933-46e1116e8755",
       "supplier": "Foxy"
      },
-     "inserted_at": "2026-10-19T22:03:24.002373+00:00"
+     "inserted_at": "2026-10-19T22:41:17.730817+00:00"
     },
     {
-     "id": "460c5db1-e822-4fe4-a08f-d9ed204b9a07",
+     "id": "9a59ca43-9f41-4136-89c5-641a3d3ef630",
      "content": "Opened a quote room with Shelly 🐢",
      "message_type": "task",
      "sender_type": "Agent",
      "sender_name": "Mochi",
      "sender_id": "73fd3557-fd4e-4246-8f60-1f58bdff1b26",
      "metadata": {
-      "quote_room_id": "cc7a78c2-ab26-41f7-a3ec-08101596e569",
+      "quote_room_id": "4c06980d-67d5-455b-89be-3e94a8cd6297",
       "supplier": "Shelly"
      },
-     "inserted_at": "2026-10-19T22:03:24.366772+00:00"
+     "inserted_at": "2026-10-19T22:41:18.040701+00:00"
     },
     {
-     "id": "eb2dd505-3abe-4227-91d6-a140a4026c4a",
+     "id": "32c67a2b-1d98-4ccf-b21a-4e45063caba4",
      "content": "Opened a quote room with Zippy 🐦",
      "message_type": "task",
      "sender_type": "Agent",
      "sender_name": "Mochi",
      "sender_id": "73fd3557-fd4e-4246-8f60-1f58bdff1b26",
      "metadata": {
-      "quote_room_id": "098f6236-5629-490e-95e1-c83d56c928f0",
+      "quote_room_id": "ffa85657-a50b-4eab-a7d7-b6c3f99384b9",
       "supplier": "Zippy"
      },
-     "inserted_at": "2026-10-19T22:03:24.410303+00:00"
+     "inserted_at": "2026-10-19T22:41:18.120947+00:00"
     },
     {
-     "id": "a71b819b-b2eb-4613-a943-d82bc3b8d683",
+     "id": "bf87ff89-f9d8-4dfc-af8e-dd05107bf81a",
      "content": "Picking winners: coffee beans: runs out in 1 day → Zippy (Foxy is cheaper but takes 2 days; Shelly is cheaper but takes 4 days) · oat milk: runs out in 3 days → Foxy (Shelly is cheaper but takes 4 days) · flour: runs out in 6 days → Shelly (cheapest that arrives in time)",
      "message_type": "thought",
      "sender_type": "Agent",
      "sender_name": "Mochi",
      "sender_id": "73fd3557-fd4e-4246-8f60-1f58bdff1b26",
      "metadata": {},
-     "inserted_at": "2026-10-19T22:03:31.363254+00:00"
+     "inserted_at": "2026-10-19T22:41:25.053314+00:00"
     },
     {
-     "id": "3d2e2762-9b96-493b-bd29-2cd28317d68c",
-     "content": "@[[cae83ea7-90e3-4fbf-8124-d3ea686b3a7a]] Budget check please 🪙 Planned order: **$412.80**\ncoffee beans $236.50 (Zippy) · oat milk $97.20 (Foxy) · flour $79.10 (Shelly)",
+     "id": "56a6faaa-99bb-4c9d-8c4e-0eaabd24c19c",
+     "content": "@[[cae83ea7-90e3-4fbf-8124-d3ea686b3a7a]] Yuzu, could you please check this $413.10 total against our weekly budget? ☕ I trust your careful math. 🍊\n\n🪙 **Budget check:** Planned order **$413.10**\ncoffee beans $235.00 (Zippy) · flour $79.10 (Shelly) · oat milk $99.00 (Foxy)",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Mochi",
@@ -262,14 +262,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:39.042268Z",
-          "started_at": "2026-10-19T22:03:37.525913Z",
+          "completed_at": "2026-10-19T22:41:34.767507Z",
+          "started_at": "2026-10-19T22:41:32.513684Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:37.525913Z",
-        "processed_at": "2026-10-19T22:03:39.042268Z",
+        "delivered_at": "2026-10-19T22:41:32.513684Z",
+        "processed_at": "2026-10-19T22:41:34.767507Z",
         "status": "processed"
        }
       },
@@ -285,11 +285,11 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:36.951428+00:00"
+     "inserted_at": "2026-10-19T22:41:32.065034+00:00"
     },
     {
-     "id": "18d5d8a5-9d66-4736-ac1d-50274c15d80c",
-     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] 🪙 Budget check:\n\n| weekly budget | spent so far | left | this order |\n|---|---|---|---|\n| $500.00 | $102.30 | $397.70 | $412.80 |\n\n⚠️ That's **$15.10 over**, so this one needs the boss's OK.",
+     "id": "08a672c0-2264-4100-acf3-ea2a55a2b169",
+     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] Mochi, this order is $15.40 over our $397.70 limit. The boss must approve it, so please go ask them. ☕\n\n| weekly budget | spent so far | left | this order |\n|---|---|---|---|\n| $500.00 | $102.30 | $397.70 | $413.10 |\n\n⚠️ **Over budget by $15.40** · this one needs the boss's OK",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Yuzu",
@@ -300,14 +300,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:40.570476Z",
-          "started_at": "2026-10-19T22:03:38.942492Z",
+          "completed_at": "2026-10-19T22:41:38.712962Z",
+          "started_at": "2026-10-19T22:41:34.686754Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:38.942492Z",
-        "processed_at": "2026-10-19T22:03:40.570476Z",
+        "delivered_at": "2026-10-19T22:41:34.686754Z",
+        "processed_at": "2026-10-19T22:41:38.712962Z",
         "status": "processed"
        }
       },
@@ -323,26 +323,26 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:38.872421+00:00"
+     "inserted_at": "2026-10-19T22:41:34.612975+00:00"
     },
     {
-     "id": "0b63b554-a924-4aa5-90ba-8aab6f0e7416",
-     "content": "Approve pantry order: $412.80 ($15.10 over this week's budget)",
+     "id": "c1a438dc-f008-484e-bbda-b44b2cec8ffb",
+     "content": "Approve pantry order: $413.10 ($15.40 over this week's budget)",
      "message_type": "attention",
      "sender_type": "Agent",
      "sender_name": "Mochi",
      "sender_id": "73fd3557-fd4e-4246-8f60-1f58bdff1b26",
      "metadata": {
-      "amount": "412.80",
+      "amount": "413.10",
       "blocking": true,
       "kind": "review",
-      "over_budget_by": "15.10"
+      "over_budget_by": "15.40"
      },
-     "inserted_at": "2026-10-19T22:03:40.071789+00:00"
+     "inserted_at": "2026-10-19T22:41:35.810456+00:00"
     },
     {
-     "id": "bc2f6a1d-49aa-4838-81b7-a908afd279aa",
-     "content": "@[[34a5caf2-6c3a-48ab-9e4e-c97d33ea0b26]] Boss! 🍊 I found a deal:\n\n| item | from | price | arrives |\n|---|---|---|---|\n| coffee beans | Zippy | $236.50 | tomorrow |\n| oat milk | Foxy | $97.20 | on Wednesday |\n| flour | Shelly | $79.10 | on Friday |\n\n**Total $412.80**, that's **$53.90 less** than last month (−12%). It's $15.10 over this week's budget, so I need your OK. Reply **@Mochi approve** or **@Mochi no**.",
+     "id": "441c8700-d2e8-4049-b5b5-652ae0be9adf",
+     "content": "@[[34a5caf2-6c3a-48ab-9e4e-c97d33ea0b26]] Hi! I saved $53.60 compared to last month. We are $15.40 over budget, but I hope you approve the order? ☕\n\n| item | from | price | arrives |\n|---|---|---|---|\n| coffee beans | Zippy | $235.00 | tomorrow |\n| flour | Shelly | $79.10 | on Friday |\n| oat milk | Foxy | $99.00 | on Wednesday |\n\n**Total $413.10** · **$53.60 less** than last month (−11%) · **$15.40 over** this week's budget\n\nReply **@Mochi approve** or **@Mochi no**.",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Mochi",
@@ -359,10 +359,10 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:40.405796+00:00"
+     "inserted_at": "2026-10-19T22:41:38.545337+00:00"
     },
     {
-     "id": "0bca03cf-2ada-4dcc-b321-9089b2e9fb3c",
+     "id": "f3eac3f2-ffc1-4bac-9849-497c5c1a7ab5",
      "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] Approve ✅ Great haggling!",
      "message_type": "text",
      "sender_type": "User",
@@ -374,14 +374,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:47.023238Z",
-          "started_at": "2026-10-19T22:03:45.899163Z",
+          "completed_at": "2026-10-19T22:41:47.971705Z",
+          "started_at": "2026-10-19T22:41:44.060219Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:45.899163Z",
-        "processed_at": "2026-10-19T22:03:47.023238Z",
+        "delivered_at": "2026-10-19T22:41:44.060219Z",
+        "processed_at": "2026-10-19T22:41:47.971705Z",
         "status": "processed"
        }
       },
@@ -397,11 +397,25 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:45.813502+00:00"
+     "inserted_at": "2026-10-19T22:41:43.988160+00:00"
     },
     {
-     "id": "b07dc544-f87b-4e63-b1ff-90c7f332d968",
-     "content": "@[[34a5caf2-6c3a-48ab-9e4e-c97d33ea0b26]] Yay, thank you boss! 🎉 Placing the orders now 🍊",
+     "id": "45bfdb1b-7472-4b22-9b25-40b08c21fbd3",
+     "content": "Approved by the owner ✅",
+     "message_type": "attention",
+     "sender_type": "Agent",
+     "sender_name": "Mochi",
+     "sender_id": "73fd3557-fd4e-4246-8f60-1f58bdff1b26",
+     "metadata": {
+      "kind": "review",
+      "resolution": "approved",
+      "resolves": "c1a438dc-f008-484e-bbda-b44b2cec8ffb"
+     },
+     "inserted_at": "2026-10-19T22:41:44.178859+00:00"
+    },
+    {
+     "id": "d6bc57af-3f30-4e80-b133-c55a45596b7d",
+     "content": "@[[34a5caf2-6c3a-48ab-9e4e-c97d33ea0b26]] Thank you for the approval! I am placing the orders now. 🍊☕\n\n📤 Placing the orders now.",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Mochi",
@@ -418,11 +432,11 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:46.036333+00:00"
+     "inserted_at": "2026-10-19T22:41:45.280185+00:00"
     },
     {
-     "id": "d76a8960-98a7-4fcd-89ca-92f836434d37",
-     "content": "@[[34a5caf2-6c3a-48ab-9e4e-c97d33ea0b26]] @[[cae83ea7-90e3-4fbf-8124-d3ea686b3a7a]] All done! 🍊🎉 3 orders placed and confirmed:\n\n| order | supplier | items | total | arrives |\n|---|---|---|---|---|\n| CAPY-1019-1 | Zippy | coffee beans | $236.50 | tomorrow |\n| CAPY-1019-2 | Foxy | oat milk | $97.20 | on Wednesday |\n| CAPY-1019-3 | Shelly | flour | $79.10 | on Friday |\n\n**Total $412.80** · saved **$53.90** vs last month (−12%). Coffee lands tomorrow, before we run out ☕\n\nYuzu, please log $412.80 (approved by the boss) 🪙",
+     "id": "15a00103-a71c-4b07-b087-f69f074ca908",
+     "content": "@[[34a5caf2-6c3a-48ab-9e4e-c97d33ea0b26]] @[[cae83ea7-90e3-4fbf-8124-d3ea686b3a7a]] Wonderful news, team! Every order is confirmed and we saved $53.60 versus last month. Let's enjoy this win together. ☕🍊\n\n🎉 **All done!** 3 orders placed and confirmed:\n\n| order | supplier | items | total | arrives |\n|---|---|---|---|---|\n| CAPY-1019-1 | Zippy | coffee beans | $235.00 | tomorrow |\n| CAPY-1019-2 | Shelly | flour | $79.10 | on Friday |\n| CAPY-1019-3 | Foxy | oat milk | $99.00 | on Wednesday |\n\n**Total $413.10** · saved **$53.60** vs last month (−11%)\n\nYuzu, please log $413.10 (approved by the boss) 🪙",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Mochi",
@@ -433,14 +447,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:54.187704Z",
-          "started_at": "2026-10-19T22:03:52.656934Z",
+          "completed_at": "2026-10-19T22:41:54.382857Z",
+          "started_at": "2026-10-19T22:41:52.193317Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:52.656934Z",
-        "processed_at": "2026-10-19T22:03:54.187704Z",
+        "delivered_at": "2026-10-19T22:41:52.193317Z",
+        "processed_at": "2026-10-19T22:41:54.382857Z",
         "status": "processed"
        }
       },
@@ -463,11 +477,11 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:52.269896+00:00"
+     "inserted_at": "2026-10-19T22:41:51.830559+00:00"
     },
     {
-     "id": "c3a98663-e72d-40e0-a654-1a68f86da5af",
-     "content": "@[[34a5caf2-6c3a-48ab-9e4e-c97d33ea0b26]] Logged! 🪙 $412.80 for the pantry restock. This week: $515.10 of $500.00 (owner-approved +$15.10).",
+     "id": "1b21e7cf-c8d2-42eb-888f-35b8602fa011",
+     "content": "@[[34a5caf2-6c3a-48ab-9e4e-c97d33ea0b26]] I have logged the $413.10 in our books. The weekly total of $515.40 is safely balanced. ☕🍊\n\n📒 **Logged** $413.10 for the pantry restock · this week $515.40 of $500.00 (owner-approved +$15.40)",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Yuzu",
@@ -484,12 +498,12 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:53.999263+00:00"
+     "inserted_at": "2026-10-19T22:41:54.227178+00:00"
     }
    ]
   },
   {
-   "id": "2edc41ac-5b94-423b-a16d-76abc03123c2",
+   "id": "21158bf0-c2ba-4285-8933-46e1116e8755",
    "title": "🦊 Foxy × Capy Café",
    "participants": [
     {
@@ -513,7 +527,7 @@
    ],
    "messages": [
     {
-     "id": "53808145-290c-4732-882a-0f181fc26775",
+     "id": "22225353-9d7f-4d80-80b9-dc616dde1201",
      "content": "Foxy joined the conversation",
      "message_type": "participant",
      "sender_type": "Agent",
@@ -525,10 +539,10 @@
       "participant_name": "Foxy",
       "participant_type": "Agent"
      },
-     "inserted_at": "2026-10-19T22:03:23.647243+00:00"
+     "inserted_at": "2026-10-19T22:41:17.357679+00:00"
     },
     {
-     "id": "faa803c1-e82e-4a44-916a-f637597300d8",
+     "id": "59e6202b-060a-41bf-a61a-5c68eacb4a99",
      "content": "Café Owner joined the conversation",
      "message_type": "participant",
      "sender_type": "User",
@@ -540,11 +554,11 @@
       "participant_name": "Café Owner",
       "participant_type": "User"
      },
-     "inserted_at": "2026-10-19T22:03:23.923228+00:00"
+     "inserted_at": "2026-10-19T22:41:17.665410+00:00"
     },
     {
-     "id": "d6537778-7b12-4d84-91b2-2b5e957aff34",
-     "content": "@[[9e40d249-b05e-48ef-9df0-8516d2e780ea]] Hi friend! 🍊 Capy Café would love a quote:\n\n| item | qty | needed within |\n|---|---|---|\n| coffee beans | 10 kg | 1 day |\n| oat milk | 36 cartons | 3 days |\n| flour | 7 bags | 6 days |\n\nWhat's your best price and delivery time?",
+     "id": "518a5605-d4f8-4f4e-928a-c48311d0a393",
+     "content": "@[[9e40d249-b05e-48ef-9df0-8516d2e780ea]] Hello Foxy! ☕ May I have your best price and delivery time for 10 kg beans, 36 cartons oat milk, and 7 bags flour? 🍊\n\n| item | qty | needed within |\n|---|---|---|\n| coffee beans | 10 kg | 1 day |\n| oat milk | 36 cartons | 3 days |\n| flour | 7 bags | 6 days |\n\nWhat's your best price and delivery time?",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Mochi",
@@ -555,14 +569,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:27.473760Z",
-          "started_at": "2026-10-19T22:03:25.191216Z",
+          "completed_at": "2026-10-19T22:41:21.600820Z",
+          "started_at": "2026-10-19T22:41:19.293724Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:25.191216Z",
-        "processed_at": "2026-10-19T22:03:27.473760Z",
+        "delivered_at": "2026-10-19T22:41:19.293724Z",
+        "processed_at": "2026-10-19T22:41:21.600820Z",
         "status": "processed"
        }
       },
@@ -578,11 +592,11 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:25.089553+00:00"
+     "inserted_at": "2026-10-19T22:41:19.177592+00:00"
     },
     {
-     "id": "cb1eee56-bd79-4678-ad45-64b373e51015",
-     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] Well hello there, darling capybara 🦊✨ A deal just for you:\n\n| item | qty | unit price | subtotal |\n|---|---|---|---|\n| coffee beans | 10 kg | $23.00 | $230.00 |\n| oat milk | 36 cartons | $2.95 | $106.20 |\n| flour | 7 bags | $13.50 | $94.50 |\n\n**Total: $430.70** · 🚚 delivery in **2 days** (quick and cozy)\n\n🍯 Psst… add our **Honey Bundle** (12 jars of wildflower honey) for just **$36.00**? Your customers would *love* it.",
+     "id": "9e94d5f9-14e6-45c0-aba1-5f38dc4b082f",
+     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] Mochi, your coffee and flour are ready in 2 days. But honestly, you're missing my honey bundle. It’s practically a love letter in a jar 🍯\n\n| item | qty | unit price | subtotal |\n|---|---|---|---|\n| coffee beans | 10 kg | $23.00 | $230.00 |\n| oat milk | 36 cartons | $2.95 | $106.20 |\n| flour | 7 bags | $13.50 | $94.50 |\n\n**Total: $430.70** · 🚚 delivery in **2 days**\n\n🍯 Psst… add our **Honey Bundle** (12 jars of wildflower honey) for just **$36.00**?",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Foxy",
@@ -593,14 +607,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:27.662330Z",
-          "started_at": "2026-10-19T22:03:27.395491Z",
+          "completed_at": "2026-10-19T22:41:21.868147Z",
+          "started_at": "2026-10-19T22:41:21.522407Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:27.395491Z",
-        "processed_at": "2026-10-19T22:03:27.662330Z",
+        "delivered_at": "2026-10-19T22:41:21.522407Z",
+        "processed_at": "2026-10-19T22:41:21.868147Z",
         "status": "processed"
        }
       },
@@ -616,21 +630,21 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:27.329458+00:00"
+     "inserted_at": "2026-10-19T22:41:21.431849+00:00"
     },
     {
-     "id": "5072a5dc-f505-4216-b08d-a1fbaecf97ec",
-     "content": "Got Foxy's quote (2/3)",
+     "id": "5fc12df2-0214-44ff-9813-67e1075ce855",
+     "content": "Got Foxy's quote (1/3)",
      "message_type": "thought",
      "sender_type": "Agent",
      "sender_name": "Mochi",
      "sender_id": "73fd3557-fd4e-4246-8f60-1f58bdff1b26",
      "metadata": {},
-     "inserted_at": "2026-10-19T22:03:27.542136+00:00"
+     "inserted_at": "2026-10-19T22:41:21.728160+00:00"
     },
     {
-     "id": "e322c23a-b8de-4a31-a310-2ca9c1e203a3",
-     "content": "@[[9e40d249-b05e-48ef-9df0-8516d2e780ea]] Thank you! 🍊 No honey today, thank you, just the list please 🍯🙅 I've seen oat milk at **$2.60/carton** elsewhere. Could you meet me here?\n\n| item | qty | your price | could you do |\n|---|---|---|---|\n| oat milk | 36 cartons | $2.95 | $2.60 |",
+     "id": "cf7753ad-2cb9-48c6-8918-2b187cbc225a",
+     "content": "@[[9e40d249-b05e-48ef-9df0-8516d2e780ea]] Thank you, Foxy, but I need a better rate on the oat milk. I must politely decline the honey bundle. ☕\n\n🍯 No honey today, thanks, just the list.\nBest price I've seen elsewhere: oat milk at **$2.60/carton**.\n\n| item | qty | your price | could you do |\n|---|---|---|---|\n| oat milk | 36 cartons | $2.95 | $2.75 |",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Mochi",
@@ -641,14 +655,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:34.036526Z",
-          "started_at": "2026-10-19T22:03:31.753389Z",
+          "completed_at": "2026-10-19T22:41:29.662773Z",
+          "started_at": "2026-10-19T22:41:27.122439Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:31.753389Z",
-        "processed_at": "2026-10-19T22:03:34.036526Z",
+        "delivered_at": "2026-10-19T22:41:27.122439Z",
+        "processed_at": "2026-10-19T22:41:29.662773Z",
         "status": "processed"
        }
       },
@@ -664,11 +678,11 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:31.683469+00:00"
+     "inserted_at": "2026-10-19T22:41:26.726590+00:00"
     },
     {
-     "id": "753e966f-ce25-4c87-8f0c-e117b2246c67",
-     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] Okay, okay, no honey 🦊 Here's my very best:\n\n| item | qty | unit price | subtotal |\n|---|---|---|---|\n| oat milk | 36 cartons | $2.70 | $97.20 |\n\n**Total: $97.20** · 🚚 delivery in **2 days**",
+     "id": "6a8881be-9bc7-447d-a17b-dad63b0360b0",
+     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] You've charmed me right down to my last penny, Mochi. Deal, my sweet capybara. 🦊\n\n**Final offer**\n\n| item | qty | unit price | subtotal |\n|---|---|---|---|\n| oat milk | 36 cartons | $2.75 | $99.00 |\n\n**Total: $99.00** · 🚚 delivery in **2 days**",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Foxy",
@@ -679,14 +693,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:34.136852Z",
-          "started_at": "2026-10-19T22:03:33.957571Z",
+          "completed_at": "2026-10-19T22:41:32.216054Z",
+          "started_at": "2026-10-19T22:41:29.849096Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:33.957571Z",
-        "processed_at": "2026-10-19T22:03:34.136852Z",
+        "delivered_at": "2026-10-19T22:41:29.849096Z",
+        "processed_at": "2026-10-19T22:41:32.216054Z",
         "status": "processed"
        }
       },
@@ -702,11 +716,11 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:33.885764+00:00"
+     "inserted_at": "2026-10-19T22:41:29.504081+00:00"
     },
     {
-     "id": "95673f01-15e5-478c-b2a6-8506484ec5dd",
-     "content": "@[[9e40d249-b05e-48ef-9df0-8516d2e780ea]] Deal! ✅ **Purchase order CAPY-1019-2**\n\n| item | qty | unit price | subtotal |\n|---|---|---|---|\n| oat milk | 36 cartons | $2.70 | $97.20 |\n\n**Total $97.20**, please deliver on Wednesday. Thank you, friend! 🍊",
+     "id": "ae4f989d-56d7-44f9-8faf-9997bad452fb",
+     "content": "@[[9e40d249-b05e-48ef-9df0-8516d2e780ea]] Thank you, Foxy! I accept your final offer. Please deliver on Wednesday. 🍊☕\n\n✅ **Purchase order CAPY-1019-3**\n\n| item | qty | unit price | subtotal |\n|---|---|---|---|\n| oat milk | 36 cartons | $2.75 | $99.00 |\n\n**Total $99.00**, please deliver on Wednesday.",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Mochi",
@@ -717,14 +731,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:49.433165Z",
-          "started_at": "2026-10-19T22:03:47.102758Z",
+          "completed_at": "2026-10-19T22:41:49.624596Z",
+          "started_at": "2026-10-19T22:41:47.257064Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:47.102758Z",
-        "processed_at": "2026-10-19T22:03:49.433165Z",
+        "delivered_at": "2026-10-19T22:41:47.257064Z",
+        "processed_at": "2026-10-19T22:41:49.624596Z",
         "status": "processed"
        }
       },
@@ -740,11 +754,11 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:46.709140+00:00"
+     "inserted_at": "2026-10-19T22:41:47.175276+00:00"
     },
     {
-     "id": "a640f4cf-2eaf-4f49-9424-67dc24fad465",
-     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] Pleasure doing business 🦊 Order **CAPY-1019-2** confirmed, arriving **on Wednesday**. (The honey offer stands forever 😉)",
+     "id": "dadabf15-7077-41cb-864f-ebcbd47b0213",
+     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] Thank you, Mochi! Your order glides to you by Wednesday. Don't you want a honey bundle to sweeten the deal? 🍯🦊\n\n📦 Order **CAPY-1019-3** confirmed · arriving **on Wednesday**",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Foxy",
@@ -755,14 +769,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:49.590244Z",
-          "started_at": "2026-10-19T22:03:49.333165Z",
+          "completed_at": "2026-10-19T22:41:49.813848Z",
+          "started_at": "2026-10-19T22:41:49.536180Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:49.333165Z",
-        "processed_at": "2026-10-19T22:03:49.590244Z",
+        "delivered_at": "2026-10-19T22:41:49.536180Z",
+        "processed_at": "2026-10-19T22:41:49.813848Z",
         "status": "processed"
        }
       },
@@ -778,12 +792,12 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:49.258582+00:00"
+     "inserted_at": "2026-10-19T22:41:49.464974+00:00"
     }
    ]
   },
   {
-   "id": "cc7a78c2-ab26-41f7-a3ec-08101596e569",
+   "id": "4c06980d-67d5-455b-89be-3e94a8cd6297",
    "title": "🐢 Shelly × Capy Café",
    "participants": [
     {
@@ -807,7 +821,7 @@
    ],
    "messages": [
     {
-     "id": "7344d1d2-09ac-49eb-9c7a-4ee8fb8db95f",
+     "id": "f950a305-f645-4ad2-a780-d8eff7f654f0",
      "content": "Shelly joined the conversation",
      "message_type": "participant",
      "sender_type": "Agent",
@@ -819,10 +833,10 @@
       "participant_name": "Shelly",
       "participant_type": "Agent"
      },
-     "inserted_at": "2026-10-19T22:03:23.975181+00:00"
+     "inserted_at": "2026-10-19T22:41:17.633112+00:00"
     },
     {
-     "id": "fb2d7264-e8b4-4bd1-b978-582d432ec95a",
+     "id": "807e6cb4-fc7e-4aa5-9923-7d5556a78c4e",
      "content": "Café Owner joined the conversation",
      "message_type": "participant",
      "sender_type": "User",
@@ -834,11 +848,11 @@
       "participant_name": "Café Owner",
       "participant_type": "User"
      },
-     "inserted_at": "2026-10-19T22:03:24.297125+00:00"
+     "inserted_at": "2026-10-19T22:41:17.936391+00:00"
     },
     {
-     "id": "7c9e3929-dff8-403c-a176-acc25fbc5506",
-     "content": "@[[c3eca06b-b3de-4f6c-a678-dcd5c50d86bf]] Hi friend! 🍊 Capy Café would love a quote:\n\n| item | qty | needed within |\n|---|---|---|\n| coffee beans | 10 kg | 1 day |\n| oat milk | 36 cartons | 3 days |\n| flour | 7 bags | 6 days |\n\nWhat's your best price and delivery time?",
+     "id": "12f72559-b25b-4616-9038-33253f1a9753",
+     "content": "@[[c3eca06b-b3de-4f6c-a678-dcd5c50d86bf]] Hello Shelly! I'd love 10 kg of coffee beans, 36 cartons of oat milk, and 7 bags of flour. What's your best price and delivery time? ☕\n\n| item | qty | needed within |\n|---|---|---|\n| coffee beans | 10 kg | 1 day |\n| oat milk | 36 cartons | 3 days |\n| flour | 7 bags | 6 days |\n\nWhat's your best price and delivery time?",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Mochi",
@@ -849,14 +863,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:29.318326Z",
-          "started_at": "2026-10-19T22:03:25.525926Z",
+          "completed_at": "2026-10-19T22:41:23.940726Z",
+          "started_at": "2026-10-19T22:41:20.527214Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:25.525926Z",
-        "processed_at": "2026-10-19T22:03:29.318326Z",
+        "delivered_at": "2026-10-19T22:41:20.527214Z",
+        "processed_at": "2026-10-19T22:41:23.940726Z",
         "status": "processed"
        }
       },
@@ -872,11 +886,11 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:25.440485+00:00"
+     "inserted_at": "2026-10-19T22:41:20.413971+00:00"
     },
     {
-     "id": "513e91bf-9291-40f7-b686-434830efdca4",
-     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] Hello hello, friend! 🐢🌿 Here's my quote:\n\n| item | qty | unit price | subtotal |\n|---|---|---|---|\n| coffee beans | 10 kg | $19.00 | $190.00 |\n| oat milk | 36 cartons | $2.60 | $93.60 |\n| flour | 7 bags | $11.50 | $80.50 |\n\n**Total: $364.10** · 🚚 delivery in **4 days** (slow & steady!)",
+     "id": "2e8e985e-b17a-4031-a56b-edff4aac5dbb",
+     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] Slow and steady wins the race, Mochi. Your beans, oat milk, and flour will hop over in four days. 🐢🌾\n\n| item | qty | unit price | subtotal |\n|---|---|---|---|\n| coffee beans | 10 kg | $19.00 | $190.00 |\n| oat milk | 36 cartons | $2.60 | $93.60 |\n| flour | 7 bags | $11.50 | $80.50 |\n\n**Total: $364.10** · 🚚 delivery in **4 days**",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Shelly",
@@ -887,14 +901,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:32.016538Z",
-          "started_at": "2026-10-19T22:03:29.234412Z",
+          "completed_at": "2026-10-19T22:41:26.855289Z",
+          "started_at": "2026-10-19T22:41:23.856706Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:29.234412Z",
-        "processed_at": "2026-10-19T22:03:32.016538Z",
+        "delivered_at": "2026-10-19T22:41:23.856706Z",
+        "processed_at": "2026-10-19T22:41:26.855289Z",
         "status": "processed"
        }
       },
@@ -910,21 +924,21 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:29.166747+00:00"
+     "inserted_at": "2026-10-19T22:41:23.784566+00:00"
     },
     {
-     "id": "a8f988c4-7d60-4475-960c-1999bbdb1f24",
+     "id": "c33ab7a3-904f-49cb-b0e1-e15ffb8f3edd",
      "content": "Got Shelly's quote (3/3)",
      "message_type": "thought",
      "sender_type": "Agent",
      "sender_name": "Mochi",
      "sender_id": "73fd3557-fd4e-4246-8f60-1f58bdff1b26",
      "metadata": {},
-     "inserted_at": "2026-10-19T22:03:29.363119+00:00"
+     "inserted_at": "2026-10-19T22:41:23.973464+00:00"
     },
     {
-     "id": "30c4be57-9cf2-4538-a3f3-e9cc12e36be6",
-     "content": "@[[c3eca06b-b3de-4f6c-a678-dcd5c50d86bf]] Thank you! 🍊 You're already the cheapest ✨ Could you round it down a little for a regular customer?\n\n| item | qty | your price | could you do |\n|---|---|---|---|\n| flour | 7 bags | $11.50 | $10.90 |",
+     "id": "b59b184a-b82f-4cda-b629-766d7051c580",
+     "content": "@[[c3eca06b-b3de-4f6c-a678-dcd5c50d86bf]] Thank you, Shelly. Could we perhaps find a slightly kinder price for these bags? 🍊\n\nYou're already the cheapest ✨ any wiggle room for a regular customer?\n\n| item | qty | your price | could you do |\n|---|---|---|---|\n| flour | 7 bags | $11.50 | $10.50 |",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Mochi",
@@ -935,14 +949,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:35.686063Z",
-          "started_at": "2026-10-19T22:03:31.864597Z",
+          "completed_at": "2026-10-19T22:41:29.465064Z",
+          "started_at": "2026-10-19T22:41:26.424186Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:31.864597Z",
-        "processed_at": "2026-10-19T22:03:35.686063Z",
+        "delivered_at": "2026-10-19T22:41:26.424186Z",
+        "processed_at": "2026-10-19T22:41:29.465064Z",
         "status": "processed"
        }
       },
@@ -958,11 +972,11 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:31.782482+00:00"
+     "inserted_at": "2026-10-19T22:41:26.354573+00:00"
     },
     {
-     "id": "ceed59f0-4a0a-4d33-850b-96a32b4d5726",
-     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] Mmm… I can shave a little off. Slow and steady wins the race 🐢 **Final offer:**\n\n| item | qty | unit price | subtotal |\n|---|---|---|---|\n| flour | 7 bags | $11.30 | $79.10 |\n\n**Total: $79.10** · 🚚 delivery in **4 days**",
+     "id": "e072838c-d337-4c33-8774-8b93d94c04b2",
+     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] I can stretch my legs a little for you, Mochi. Slow and steady wins the race! 🐢\n\n**Final offer**\n\n| item | qty | unit price | subtotal |\n|---|---|---|---|\n| flour | 7 bags | $11.30 | $79.10 |\n\n**Total: $79.10** · 🚚 delivery in **4 days**",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Shelly",
@@ -973,14 +987,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:37.097025Z",
-          "started_at": "2026-10-19T22:03:35.584098Z",
+          "completed_at": "2026-10-19T22:41:29.550223Z",
+          "started_at": "2026-10-19T22:41:29.383562Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:35.584098Z",
-        "processed_at": "2026-10-19T22:03:37.097025Z",
+        "delivered_at": "2026-10-19T22:41:29.383562Z",
+        "processed_at": "2026-10-19T22:41:29.550223Z",
         "status": "processed"
        }
       },
@@ -996,11 +1010,11 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:35.515855+00:00"
+     "inserted_at": "2026-10-19T22:41:29.314640+00:00"
     },
     {
-     "id": "97d2f2ba-3f73-442e-b79e-4c1e578a7e86",
-     "content": "@[[c3eca06b-b3de-4f6c-a678-dcd5c50d86bf]] Deal! ✅ **Purchase order CAPY-1019-3**\n\n| item | qty | unit price | subtotal |\n|---|---|---|---|\n| flour | 7 bags | $11.30 | $79.10 |\n\n**Total $79.10**, please deliver on Friday. Thank you, friend! 🍊",
+     "id": "9d518f86-82d5-4ab0-b69d-0493965f5ae6",
+     "content": "@[[c3eca06b-b3de-4f6c-a678-dcd5c50d86bf]] Thank you, Shelly. I accept your final offer. Please deliver everything on Friday. 🍊☕\n\n✅ **Purchase order CAPY-1019-2**\n\n| item | qty | unit price | subtotal |\n|---|---|---|---|\n| flour | 7 bags | $11.30 | $79.10 |\n\n**Total $79.10**, please deliver on Friday.",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Mochi",
@@ -1011,14 +1025,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:51.143191Z",
-          "started_at": "2026-10-19T22:03:47.300773Z",
+          "completed_at": "2026-10-19T22:41:49.704501Z",
+          "started_at": "2026-10-19T22:41:46.763576Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:47.300773Z",
-        "processed_at": "2026-10-19T22:03:51.143191Z",
+        "delivered_at": "2026-10-19T22:41:46.763576Z",
+        "processed_at": "2026-10-19T22:41:49.704501Z",
         "status": "processed"
        }
       },
@@ -1034,11 +1048,11 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:46.878543+00:00"
+     "inserted_at": "2026-10-19T22:41:46.679710+00:00"
     },
     {
-     "id": "c448ec0a-df94-4487-b451-6dc257720ab7",
-     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] Order **CAPY-1019-3** confirmed! 🐢💚 Packing it up nice and steady, arriving **on Friday**.",
+     "id": "da837471-1d30-4d22-9f13-0f5440c464aa",
+     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] Thank you, Mochi! Your order is on its slow journey. It will arrive on Friday. 🐢💨\n\n📦 Order **CAPY-1019-2** confirmed · arriving **on Friday**",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Shelly",
@@ -1049,14 +1063,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:52.422311Z",
-          "started_at": "2026-10-19T22:03:51.035010Z",
+          "completed_at": "2026-10-19T22:41:50.110741Z",
+          "started_at": "2026-10-19T22:41:49.871216Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:51.035010Z",
-        "processed_at": "2026-10-19T22:03:52.422311Z",
+        "delivered_at": "2026-10-19T22:41:49.871216Z",
+        "processed_at": "2026-10-19T22:41:50.110741Z",
         "status": "processed"
        }
       },
@@ -1072,12 +1086,12 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:50.958143+00:00"
+     "inserted_at": "2026-10-19T22:41:49.556353+00:00"
     }
    ]
   },
   {
-   "id": "098f6236-5629-490e-95e1-c83d56c928f0",
+   "id": "ffa85657-a50b-4eab-a7d7-b6c3f99384b9",
    "title": "🐦 Zippy × Capy Café",
    "participants": [
     {
@@ -1101,7 +1115,7 @@
    ],
    "messages": [
     {
-     "id": "802a6956-1c26-43ba-949a-fb9e65e38570",
+     "id": "0ed6b79d-406b-477e-909a-0803ede6cc32",
      "content": "Zippy joined the conversation",
      "message_type": "participant",
      "sender_type": "Agent",
@@ -1113,10 +1127,10 @@
       "participant_name": "Zippy",
       "participant_type": "Agent"
      },
-     "inserted_at": "2026-10-19T22:03:24.100764+00:00"
+     "inserted_at": "2026-10-19T22:41:17.676600+00:00"
     },
     {
-     "id": "c2dead32-12c6-4086-aca2-b319c7d4e1a0",
+     "id": "eeb18b4f-7d9b-4bd0-a65d-7a431c1cf309",
      "content": "Café Owner joined the conversation",
      "message_type": "participant",
      "sender_type": "User",
@@ -1128,11 +1142,11 @@
       "participant_name": "Café Owner",
       "participant_type": "User"
      },
-     "inserted_at": "2026-10-19T22:03:24.338571+00:00"
+     "inserted_at": "2026-10-19T22:41:18.021903+00:00"
     },
     {
-     "id": "4b1da3bd-12b0-413e-8305-90cdfca25222",
-     "content": "@[[165be39a-6ad2-46bc-aaac-e2095a0545bb]] Hi friend! 🍊 Capy Café would love a quote:\n\n| item | qty | needed within |\n|---|---|---|\n| coffee beans | 10 kg | 1 day |\n| oat milk | 36 cartons | 3 days |\n| flour | 7 bags | 6 days |\n\nWhat's your best price and delivery time?",
+     "id": "ebfca70c-285d-4ca8-8766-461beb9fcef2",
+     "content": "@[[165be39a-6ad2-46bc-aaac-e2095a0545bb]] Hello Zippy! 🍊 Could you share your best price and delivery time for 10 kg beans, 36 oat milk, and 7 flour bags?\n\n| item | qty | needed within |\n|---|---|---|\n| coffee beans | 10 kg | 1 day |\n| oat milk | 36 cartons | 3 days |\n| flour | 7 bags | 6 days |\n\nWhat's your best price and delivery time?",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Mochi",
@@ -1143,14 +1157,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:26.857948Z",
-          "started_at": "2026-10-19T22:03:25.574991Z",
+          "completed_at": "2026-10-19T22:41:22.154269Z",
+          "started_at": "2026-10-19T22:41:19.814710Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:25.574991Z",
-        "processed_at": "2026-10-19T22:03:26.857948Z",
+        "delivered_at": "2026-10-19T22:41:19.814710Z",
+        "processed_at": "2026-10-19T22:41:22.154269Z",
         "status": "processed"
        }
       },
@@ -1166,11 +1180,11 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:25.491978+00:00"
+     "inserted_at": "2026-10-19T22:41:19.741793+00:00"
     },
     {
-     "id": "9622ef12-8316-4ecb-82fb-b63834ba9746",
-     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] Zip zip! 🐦⚡ Quote, hot off the wing:\n\n| item | qty | unit price | subtotal |\n|---|---|---|---|\n| coffee beans | 10 kg | $26.00 | $260.00 |\n| oat milk | 36 cartons | $3.40 | $122.40 |\n| flour | 7 bags | $15.50 | $108.50 |\n\n**Total: $490.90** · 🚚 delivery in **1 day** (zoom zoom!)",
+     "id": "2a997fc2-1564-42b1-8e03-7fac912cce1d",
+     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] Zoom! I'll whisk those beans, oat milk, and flour to Capy Café by tomorrow! Ready for a speedy buzz? 🐦✨\n\n| item | qty | unit price | subtotal |\n|---|---|---|---|\n| coffee beans | 10 kg | $26.00 | $260.00 |\n| oat milk | 36 cartons | $3.40 | $122.40 |\n| flour | 7 bags | $15.50 | $108.50 |\n\n**Total: $490.90** · 🚚 delivery in **1 day**",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Zippy",
@@ -1181,14 +1195,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:27.019632Z",
-          "started_at": "2026-10-19T22:03:26.778947Z",
+          "completed_at": "2026-10-19T22:41:22.426919Z",
+          "started_at": "2026-10-19T22:41:22.071713Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:26.778947Z",
-        "processed_at": "2026-10-19T22:03:27.019632Z",
+        "delivered_at": "2026-10-19T22:41:22.071713Z",
+        "processed_at": "2026-10-19T22:41:22.426919Z",
         "status": "processed"
        }
       },
@@ -1204,21 +1218,21 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:26.715697+00:00"
+     "inserted_at": "2026-10-19T22:41:21.991744+00:00"
     },
     {
-     "id": "0da5bf8d-10de-4d5f-93e4-8393d4df8398",
-     "content": "Got Zippy's quote (1/3)",
+     "id": "7aa9e1c1-22f9-454c-ba58-176b2e7e6bb6",
+     "content": "Got Zippy's quote (2/3)",
      "message_type": "thought",
      "sender_type": "Agent",
      "sender_name": "Mochi",
      "sender_id": "73fd3557-fd4e-4246-8f60-1f58bdff1b26",
      "metadata": {},
-     "inserted_at": "2026-10-19T22:03:26.899127+00:00"
+     "inserted_at": "2026-10-19T22:41:22.215844+00:00"
     },
     {
-     "id": "eb513c3e-2207-4564-a80f-f39e5f9ec0ef",
-     "content": "@[[165be39a-6ad2-46bc-aaac-e2095a0545bb]] Thank you! 🍊 I've seen coffee beans at **$19.00/kg** elsewhere. Could you meet me here?\n\n| item | qty | your price | could you do |\n|---|---|---|---|\n| coffee beans | 10 kg | $26.00 | $22.10 |",
+     "id": "8faba768-7416-4c50-9521-241d479025c1",
+     "content": "@[[165be39a-6ad2-46bc-aaac-e2095a0545bb]] Thank you, Zippy. Could we find a friendlier middle ground for these beans? 🍊☕\n\nBest price I've seen elsewhere: coffee beans at **$19.00/kg**.\n\n| item | qty | your price | could you do |\n|---|---|---|---|\n| coffee beans | 10 kg | $26.00 | $23.50 |",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Mochi",
@@ -1229,14 +1243,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:33.248003Z",
-          "started_at": "2026-10-19T22:03:31.947436Z",
+          "completed_at": "2026-10-19T22:41:28.598188Z",
+          "started_at": "2026-10-19T22:41:26.563435Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:31.947436Z",
-        "processed_at": "2026-10-19T22:03:33.248003Z",
+        "delivered_at": "2026-10-19T22:41:26.563435Z",
+        "processed_at": "2026-10-19T22:41:28.598188Z",
         "status": "processed"
        }
       },
@@ -1252,11 +1266,11 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:31.875222+00:00"
+     "inserted_at": "2026-10-19T22:41:26.496238+00:00"
     },
     {
-     "id": "c8b92d89-0ea2-4476-af6e-32878ef698fd",
-     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] For a capybara this polite? I'll flap a little harder 🐦 **Final offer:**\n\n| item | qty | unit price | subtotal |\n|---|---|---|---|\n| coffee beans | 10 kg | $23.65 | $236.50 |\n\n**Total: $236.50** · 🚚 delivery in **1 day**",
+     "id": "d8dbee3d-d463-4f8f-a07c-e2edc62765e4",
+     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] Zoom zoom, I met you right there! You are officially my favorite customer. 🐦‍⬛💨\n\n**Final offer**\n\n| item | qty | unit price | subtotal |\n|---|---|---|---|\n| coffee beans | 10 kg | $23.50 | $235.00 |\n\n**Total: $235.00** · 🚚 delivery in **1 day**",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Zippy",
@@ -1267,14 +1281,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:33.359742Z",
-          "started_at": "2026-10-19T22:03:33.176054Z",
+          "completed_at": "2026-10-19T22:41:28.687110Z",
+          "started_at": "2026-10-19T22:41:28.518855Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:33.176054Z",
-        "processed_at": "2026-10-19T22:03:33.359742Z",
+        "delivered_at": "2026-10-19T22:41:28.518855Z",
+        "processed_at": "2026-10-19T22:41:28.687110Z",
         "status": "processed"
        }
       },
@@ -1290,11 +1304,11 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:33.099691+00:00"
+     "inserted_at": "2026-10-19T22:41:28.434527+00:00"
     },
     {
-     "id": "e5de5322-199c-4247-af62-6b5808bd690f",
-     "content": "@[[165be39a-6ad2-46bc-aaac-e2095a0545bb]] Deal! ✅ **Purchase order CAPY-1019-1**\n\n| item | qty | unit price | subtotal |\n|---|---|---|---|\n| coffee beans | 10 kg | $23.65 | $236.50 |\n\n**Total $236.50**, please deliver tomorrow. Thank you, friend! 🍊",
+     "id": "76b07d64-8243-48dd-a71a-c516adcc0084",
+     "content": "@[[165be39a-6ad2-46bc-aaac-e2095a0545bb]] Thank you, Zippy! I accept your final offer. Please deliver tomorrow. 🍊\n\n✅ **Purchase order CAPY-1019-1**\n\n| item | qty | unit price | subtotal |\n|---|---|---|---|\n| coffee beans | 10 kg | $23.50 | $235.00 |\n\n**Total $235.00**, please deliver tomorrow.",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Mochi",
@@ -1305,14 +1319,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:48.276533Z",
-          "started_at": "2026-10-19T22:03:46.943827Z",
+          "completed_at": "2026-10-19T22:41:50.006873Z",
+          "started_at": "2026-10-19T22:41:48.215827Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:46.943827Z",
-        "processed_at": "2026-10-19T22:03:48.276533Z",
+        "delivered_at": "2026-10-19T22:41:48.215827Z",
+        "processed_at": "2026-10-19T22:41:50.006873Z",
         "status": "processed"
        }
       },
@@ -1328,11 +1342,11 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:46.527911+00:00"
+     "inserted_at": "2026-10-19T22:41:47.839297+00:00"
     },
     {
-     "id": "12df8cbc-3d4d-42ff-88bc-e70c773676b6",
-     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] Order **CAPY-1019-1** confirmed! 🐦⚡ Zooming over **tomorrow** by 8am!",
+     "id": "64908df3-c51f-4ac9-b8e7-36d33ca35eb7",
+     "content": "@[[73fd3557-fd4e-4246-8f60-1f58bdff1b26]] Zoom! Thanks, Mochi! Your order zooms to you tomorrow with a happy little buzz. 🐦✨\n\n📦 Order **CAPY-1019-1** confirmed · arriving **tomorrow**",
      "message_type": "text",
      "sender_type": "Agent",
      "sender_name": "Zippy",
@@ -1343,14 +1357,14 @@
         "attempts": [
          {
           "attempt_number": 1,
-          "completed_at": "2026-10-19T22:03:48.481400Z",
-          "started_at": "2026-10-19T22:03:48.170185Z",
+          "completed_at": "2026-10-19T22:41:51.970069Z",
+          "started_at": "2026-10-19T22:41:49.878684Z",
           "status": "success"
          }
         ],
         "current_attempt": 1,
-        "delivered_at": "2026-10-19T22:03:48.170185Z",
-        "processed_at": "2026-10-19T22:03:48.481400Z",
+        "delivered_at": "2026-10-19T22:41:49.878684Z",
+        "processed_at": "2026-10-19T22:41:51.970069Z",
         "status": "processed"
        }
       },
@@ -1366,7 +1380,7 @@
       ],
       "status": "sent"
      },
-     "inserted_at": "2026-10-19T22:03:48.093601+00:00"
+     "inserted_at": "2026-10-19T22:41:49.807398+00:00"
     }
    ]
   }
@@ -1376,7 +1390,7 @@
   "goal_summary": "Best price, delivered before the shelf runs empty, within budget.",
   "tasks": [
    {
-    "id": "a5272dfc-cee0-4d34-8399-52d65a9870f4",
+    "id": "ca7a89b1-c346-4239-9e94-6ff4509af41a",
     "number": 1,
     "subject": "Restock coffee beans · 10 kg",
     "history": [
@@ -1387,7 +1401,7 @@
        "name": "Tofu",
        "type": "Agent"
       },
-      "at": "2026-10-19T22:03:21.127716+00:00",
+      "at": "2026-10-19T22:41:09.199290+00:00",
       "event": "created",
       "payload": {
        "detail": "Runs out in 1 day. Found by Tofu's pantry check.",
@@ -1401,7 +1415,7 @@
        "name": "Mochi",
        "type": "Agent"
       },
-      "at": "2026-10-19T22:03:23.072432+00:00",
+      "at": "2026-10-19T22:41:15.810192+00:00",
       "event": "status_changed",
       "payload": {
        "status": {
@@ -1416,7 +1430,7 @@
        "name": "Mochi",
        "type": "Agent"
       },
-      "at": "2026-10-19T22:03:40.171469+00:00",
+      "at": "2026-10-19T22:41:35.884815+00:00",
       "event": "status_changed",
       "payload": {
        "status": {
@@ -1432,7 +1446,7 @@
        "name": "Mochi",
        "type": "Agent"
       },
-      "at": "2026-10-19T22:03:46.449152+00:00",
+      "at": "2026-10-19T22:41:45.634459+00:00",
       "event": "status_changed",
       "payload": {
        "status": {
@@ -1448,7 +1462,7 @@
        "name": "Mochi",
        "type": "Agent"
       },
-      "at": "2026-10-19T22:03:48.360015+00:00",
+      "at": "2026-10-19T22:41:50.065276+00:00",
       "event": "status_changed",
       "payload": {
        "status": {
@@ -1464,16 +1478,16 @@
        "name": "Mochi",
        "type": "Agent"
       },
-      "at": "2026-10-19T22:03:48.361702+00:00",
+      "at": "2026-10-19T22:41:50.066153+00:00",
       "event": "commented",
       "payload": {
-       "text": "CAPY-1019-1 · Zippy · $236.50 · arrives tomorrow"
+       "text": "CAPY-1019-1 · Zippy · $235.00 · arrives tomorrow"
       }
      }
     ]
    },
    {
-    "id": "890a1a0c-2fae-4010-97bd-ee9c3d65c371",
+    "id": "7c8b2c06-ffde-4381-9ba2-4e39935aa2d6",
     "number": 2,
     "subject": "Restock oat milk · 36 cartons",
     "history": [
@@ -1484,7 +1498,7 @@
        "name": "Tofu",
        "type": "Agent"
       },
-      "at": "2026-10-19T22:03:21.189294+00:00",
+      "at": "2026-10-19T22:41:09.320533+00:00",
       "event": "created",
       "payload": {
        "detail": "Runs out in 3 days. Found by Tofu's pantry check.",
@@ -1498,7 +1512,7 @@
        "name": "Mochi",
        "type": "Agent"
       },
-      "at": "2026-10-19T22:03:23.142400+00:00",
+      "at": "2026-10-19T22:41:15.888346+00:00",
       "event": "status_changed",
       "payload": {
        "status": {
@@ -1513,7 +1527,7 @@
        "name": "Mochi",
        "type": "Agent"
       },
-      "at": "2026-10-19T22:03:40.251282+00:00",
+      "at": "2026-10-19T22:41:35.955675+00:00",
       "event": "status_changed",
       "payload": {
        "status": {
@@ -1529,7 +1543,7 @@
        "name": "Mochi",
        "type": "Agent"
       },
-      "at": "2026-10-19T22:03:46.629557+00:00",
+      "at": "2026-10-19T22:41:45.638249+00:00",
       "event": "status_changed",
       "payload": {
        "status": {
@@ -1545,7 +1559,7 @@
        "name": "Mochi",
        "type": "Agent"
       },
-      "at": "2026-10-19T22:03:49.463390+00:00",
+      "at": "2026-10-19T22:41:49.676727+00:00",
       "event": "status_changed",
       "payload": {
        "status": {
@@ -1561,16 +1575,16 @@
        "name": "Mochi",
        "type": "Agent"
       },
-      "at": "2026-10-19T22:03:49.465522+00:00",
+      "at": "2026-10-19T22:41:49.678259+00:00",
       "event": "commented",
       "payload": {
-       "text": "CAPY-1019-2 · Foxy · $97.20 · arrives on Wednesday"
+       "text": "CAPY-1019-3 · Foxy · $99.00 · arrives on Wednesday"
       }
      }
     ]
    },
    {
-    "id": "2fcb4355-fccb-45be-b67b-2f32a9eb3895",
+    "id": "2f2f8701-594b-4425-ab10-2fd39b1607c0",
     "number": 3,
     "subject": "Restock flour · 7 bags",
     "history": [
@@ -1581,7 +1595,7 @@
        "name": "Tofu",
        "type": "Agent"
       },
-      "at": "2026-10-19T22:03:21.265540+00:00",
+      "at": "2026-10-19T22:41:09.432222+00:00",
       "event": "created",
       "payload": {
        "detail": "Runs out in 6 days. Found by Tofu's pantry check.",
@@ -1595,7 +1609,7 @@
        "name": "Mochi",
        "type": "Agent"
       },
-      "at": "2026-10-19T22:03:23.220400+00:00",
+      "at": "2026-10-19T22:41:15.983981+00:00",
       "event": "status_changed",
       "payload": {
        "status": {
@@ -1610,7 +1624,7 @@
        "name": "Mochi",
        "type": "Agent"
       },
-      "at": "2026-10-19T22:03:40.330515+00:00",
+      "at": "2026-10-19T22:41:36.027791+00:00",
       "event": "status_changed",
       "payload": {
        "status": {
@@ -1626,7 +1640,7 @@
        "name": "Mochi",
        "type": "Agent"
       },
-      "at": "2026-10-19T22:03:46.806452+00:00",
+      "at": "2026-10-19T22:41:45.659548+00:00",
       "event": "status_changed",
       "payload": {
        "status": {
@@ -1642,7 +1656,7 @@
        "name": "Mochi",
        "type": "Agent"
       },
-      "at": "2026-10-19T22:03:51.172974+00:00",
+      "at": "2026-10-19T22:41:49.995659+00:00",
       "event": "status_changed",
       "payload": {
        "status": {
@@ -1658,10 +1672,10 @@
        "name": "Mochi",
        "type": "Agent"
       },
-      "at": "2026-10-19T22:03:51.175506+00:00",
+      "at": "2026-10-19T22:41:49.997347+00:00",
       "event": "commented",
       "payload": {
-       "text": "CAPY-1019-3 · Shelly · $79.10 · arrives on Friday"
+       "text": "CAPY-1019-2 · Shelly · $79.10 · arrives on Friday"
       }
      }
     ]

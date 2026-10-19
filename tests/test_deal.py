@@ -84,3 +84,24 @@ def test_supplier_never_goes_below_its_floor():
 def test_parse_money_and_amounts():
     assert deal.parse_money("**$1,234.50**") == D("1234.50")
     assert deal.first_amount("Planned order: **$412.80** (coffee $236.50)") == D("412.80")
+
+
+def test_model_asks_are_kept_inside_mochis_bounds():
+    items, quotes = round_one()
+    awards = deal.choose_winners(items, quotes)
+    counters = deal.counter_offers(awards, quotes, asks={"coffee beans": "5", "oat milk": 2.75, "flour": "lots"})
+    targets = {c.line.item: c.target for cs in counters.values() for c in cs}
+    assert targets["coffee beans"] == D("20.80")  # 80% of $26.00 is as far as Mochi pushes
+    assert targets["oat milk"] == D("2.75")  # inside the bounds: the model's ask stands
+    assert targets["flour"] == D("11.25")  # junk falls back to the top of the range (98%, nickel)
+
+
+def test_supplier_prices_from_the_model_are_clamped():
+    zippy = SUPPLIER_PROFILES["Zippy"]
+    line = deal.QuoteLine("coffee beans", 10, "kg", D("26.00"))
+    ask = deal.Counter(line, D("22.10"), D("19.00"))
+    price = lambda p: deal.respond_to_counters(zippy, [ask], prices={"coffee beans": p}).lines[0].unit_price
+    assert price(1) == D("22.90")  # never below the floor (88% of list)
+    assert price(99) == D("26.00")  # never above the quote
+    assert price("24.12") == D("24.10")  # otherwise the model decides, on a nickel
+    assert price("nope") == D("26.00")

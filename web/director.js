@@ -46,7 +46,7 @@ export async function createDirector(root) {
     [4, "finds three suppliers", (e) => e.kind === "link" || (e.room.kind === "supplier" && (e.kind === "join" || e.kind === "rfq"))],
     [5, "Quotes come back", (e) => e.kind === "quote" || (e.kind === "thought" && /^Got /.test(e.text))],
     [5, "So for each item", (e) => e.kind === "thought" && /Picking winners/.test(e.text)],
-    [5, "then counters", (e) => e.kind === "counter" && e.room.supplier !== "Foxy"],
+    [5, "then haggles", (e) => e.kind === "counter" && e.room.supplier !== "Foxy"],
     [5, "Mochi politely says no", (e) => e.kind === "counter" && e.room.supplier === "Foxy"],
     [6, "The final offers", (e) => e.kind === "final" || e.kind === "budget-ask"],
     [6, "But Yuzu spots", (e) => e.kind === "budget"],

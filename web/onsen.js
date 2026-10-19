@@ -105,11 +105,24 @@ const avatar = (name) => `<div class="av">${character(name === "Owner" ? "Owner"
 const nameLine = (name, extra = "") =>
   `<div class="meta"><b>${name}</b> ${CAST[name]?.emoji ?? ""} ${extra}</div>`;
 
+// The agent's own line (the first paragraph), kept short for the small pools.
+function voiceOf(text) {
+  const first = text.split("\n\n")[0].trim();
+  const clean = first.startsWith("|") ? "" : first;
+  return clean.length > 150 ? clean.slice(0, clean.lastIndexOf(" ", 146)) + "…" : clean;
+}
+
 function compactChips(e) {
   const table = parseTable(e.text);
-  const { before, after } = splitTable(e.text);
-  const lead = `<p>${inline(before.replace(/\n/g, " "))}</p>`;
-  if (!table) return `<p>${inline(e.text.replace(/\n/g, " "))}</p>`;
+  const { after } = splitTable(e.text);
+  const lead = `<p>${inline(voiceOf(e.text))}</p>`;
+  if (!table) {
+    if (e.kind === "confirm") {
+      const arriving = e.text.match(/arriving \**([^*\n]+?)\**(?:\.|$|\n)/)?.[1];
+      return lead + (arriving ? `<p><span class="chip">📦 confirmed · arriving ${inline(arriving)}</span></p>` : "");
+    }
+    return `<p>${inline(e.text.replace(/\n/g, " "))}</p>`;
+  }
   const rows = table.rows;
   let chips = "";
   switch (e.kind) {
@@ -125,6 +138,7 @@ function compactChips(e) {
     }
     case "counter":
       chips = rows.map((r) => `<span class="chip">🙏 ${r.item}: <s>${r["your price"]}</s> → ${r["could you do"]}?</span>`).join("");
+      if (/no honey/i.test(e.text)) chips += `<span class="chip honey">🍯 no honey, thanks</span>`;
       break;
     case "final":
       chips =

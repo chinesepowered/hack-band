@@ -74,6 +74,9 @@ export function buildModel(transcript) {
   };
 }
 
+// What a message does in the story. Rules look at who sent it and where, plus
+// the markers the agents' code always writes, so a chatty LLM line can't
+// change a message's kind.
 function classify(e) {
   if (e.type === "participant") return "join";
   if (e.type === "thought") return "thought";
@@ -82,20 +85,26 @@ function classify(e) {
   if (e.type !== "text") return e.type;
   const t = e.text.toLowerCase();
   if (e.senderType === "User") return /approve/.test(t) ? "approve" : "owner";
-  if (t.includes("| on shelf")) return "restock";
-  if (t.includes("needed within")) return "rfq";
-  if (t.includes("could you do")) return "counter";
-  if (t.includes("purchase order")) return "po";
-  if (t.includes("unit price") && /final offer|very best/.test(t)) return "final";
-  if (t.includes("unit price")) return "quote";
-  if (t.includes("weekly budget")) return "budget";
-  if (t.includes("budget check please")) return "budget-ask";
-  if (t.includes("found a deal")) return "approval-ask";
-  if (t.includes("all done")) return "receipt";
-  if (t.includes("logged")) return "logged";
+  if (e.room.kind === "hq") {
+    if (e.sender === "Tofu") return t.includes("| on shelf") ? "restock" : "text";
+    if (e.sender === "Yuzu") return t.includes("weekly budget") ? "budget" : t.includes("logged") ? "logged" : "text";
+    if (e.sender === "Mochi") {
+      if (t.includes("planned order")) return "budget-ask";
+      if (t.includes("approve** or")) return "approval-ask";
+      if (t.includes("all done")) return "receipt";
+      if (t.includes("placing the orders")) return "yay";
+      if (t.includes("on it")) return "on-it";
+    }
+    return "text";
+  }
+  if (e.sender === "Mochi") {
+    if (t.includes("needed within")) return "rfq";
+    if (t.includes("could you do")) return "counter";
+    if (t.includes("purchase order")) return "po";
+    return "text";
+  }
+  if (t.includes("unit price")) return /final offer|very best/.test(t) ? "final" : "quote";
   if (t.includes("confirmed")) return "confirm";
-  if (t.includes("on it")) return "on-it";
-  if (t.includes("yay")) return "yay";
   return "text";
 }
 
@@ -237,7 +246,7 @@ export function budgetState(model, shown) {
     spent: dollars(row["spent so far"]),
     left: dollars(row.left),
     order: dollars(row["this order"]),
-    over: dollars(budget.text.match(/\*\*\$([0-9.,]+) over\*\*/)?.[1] ?? "0"),
+    over: dollars((budget.text.match(/Over budget by \**\$([0-9.,]+)/) || budget.text.match(/\*\*\$([0-9.,]+) over\*\*/))?.[1] ?? "0"),
     approved,
     saved,
   };
