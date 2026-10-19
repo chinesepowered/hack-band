@@ -5,11 +5,11 @@
 Six agents on Band restock a café. They find the suppliers, open their own rooms, haggle, check the budget and
 place the orders. The café owner, a human, starts the run and only steps in again when the money goes over budget.
 
-[![The recorded Band run at 2.5× speed: quote rooms open, quotes arrive, Mochi haggles, the owner approves, every task turns green](docs/demo.gif)](video/capybargain-demo.mp4)
+[![The recorded Band run at 2.5× speed: quote rooms open, quotes arrive, Mochi haggles, the owner approves, every task turns green](docs/demo.gif)](https://www.youtube.com/watch?v=qwdnISwI0pU)
 
-▶️ **[Watch the 2-minute demo](video/capybargain-demo.mp4)** · 📝 [Hackathon write-up](SUBMISSION.md) · 📜 [Raw Band transcript](runs/demo-transcript.json)
+▶️ **[Watch the 2-minute demo on YouTube](https://www.youtube.com/watch?v=qwdnISwI0pU)** ([MP4](video/capybargain-demo.mp4)) · 📝 [Hackathon write-up](SUBMISSION.md) · 📜 [Raw Band transcript](runs/demo-transcript.json)
 
-<sub>The GIF is the recorded run at 2.5× speed, rebuilt from Band's own record of it.</sub>
+<sub>The GIF is the recorded run at 2.5× speed, rebuilt from Band's own record of it. Click it to watch the narrated video.</sub>
 
 ## TL;DR for judges
 

@@ -1,6 +1,6 @@
 # CapyBargain: a purchasing department run by AI capybaras
 
-**Built on Band** · 🎬 2-minute demo: [`video/capybargain-demo.mp4`](video/capybargain-demo.mp4)
+**Built on Band** · 🎬 [2-minute demo on YouTube](https://www.youtube.com/watch?v=qwdnISwI0pU) ([MP4](video/capybargain-demo.mp4))
 
 ## Inspiration
 
