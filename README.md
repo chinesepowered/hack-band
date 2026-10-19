@@ -2,14 +2,47 @@
 
 **A purchasing department run by AI capybaras, built on [Band](https://band.ai).**
 
-Small cafés overpay for supplies, because comparing quotes means phone tag, emails and spreadsheets.
-CapyBargain hands that job to a herd of agents that talk to each other, and to the café's suppliers,
-through Band rooms. Each agent thinks with an LLM (Qwen3.8-27B in the demo), and a human owner stays in
-charge of the money.
+Six agents on Band restock a café. They find the suppliers, open their own rooms, haggle, check the budget and
+place the orders. The café owner, a human, starts the run and only steps in again when the money goes over budget.
 
-🎬 **Demo video:** [`video/capybargain-demo.mp4`](video/capybargain-demo.mp4) (2 minutes)
+[![The recorded Band run at 2.5× speed: quote rooms open, quotes arrive, Mochi haggles, the owner approves, every task turns green](docs/demo.gif)](video/capybargain-demo.mp4)
 
-![The Capy Onsen: every Band room is a hot spring](docs/onsen.png)
+▶️ **[Watch the 2-minute demo](video/capybargain-demo.mp4)** · 📝 [Hackathon write-up](SUBMISSION.md) · 📜 [Raw Band transcript](runs/demo-transcript.json)
+
+<sub>The GIF is the recorded run at 2.5× speed, rebuilt from Band's own record of it.</sub>
+
+## TL;DR for judges
+
+- **The problem.** Small cafés overpay for supplies. Comparing quotes means phone tag, emails and spreadsheets, so
+  most owners reorder from the same supplier at the same price every week.
+- **The company.** Three capybara staff: Tofu 🥕 counts the pantry, Mochi 🍊 buys, Yuzu 🪙 holds the budget. Three
+  supplier agents: Shelly 🐢 (cheap but slow), Zippy 🐦 (next-day, pricey) and Foxy 🦊 (always upselling). They only
+  ever talk through Band.
+- **The recorded run.** Coffee, oat milk and flour for **$413.10**, which is **$53.60 (11%) less than last month**.
+  It took **48 seconds**: 4 rooms, 48 Band events, 3 tasks on the board, and two messages from the owner (the
+  kickoff and "approve").
+- **Band features used.** @mention routing, `band_lookup_peers` discovery, agent-created rooms, the room task board
+  (beta), attention events, thought and task events, the Human API and the Python SDK.
+  [Each one links to its code.](#band-features-in-the-code)
+- **AI with guardrails.** Every agent thinks with an LLM (Qwen3.8-27B in the demo) that writes its lines in
+  character, and the LLMs of Mochi and the suppliers make the negotiation moves. Code clamps every price, and
+  anything over budget goes to the human.
+- **Feedback for Band.** [What worked well, and the rough edges we hit.](#notes-for-the-band-team)
+
+## Why Band?
+
+Buying supplies is a conversation between several parties, and most of them aren't on your team.
+
+- **Suppliers are agents, not functions.** Mochi never calls supplier code. It finds them with `band_lookup_peers`
+  and negotiates with each one in a private room it creates, the way a buyer emails three vendors. Each supplier
+  keeps its own prices, price floor and personality.
+- **Mentions are the only orchestration.** No controller tells anyone what to do next. Each agent wakes up when it
+  is mentioned, and status updates mention the human, so six agents in four rooms never ping-pong.
+- **The human sits in the rooms.** The owner can watch every negotiation live. Approval is a blocking `attention`
+  event in the HQ room, and Mochi resolves it after one reply.
+- **Band's audit trail is the record.** Thought events hold Mochi's reasoning, task events link HQ to each quote
+  room, and the task board keeps every status change. The UI and the video are rebuilt from that record, starting
+  from a single room id.
 
 ## Meet the herd
 
@@ -23,23 +56,69 @@ charge of the money.
 | 🦊 | **Foxy** | Supplier: Foxy Wholesale. 2-day delivery, and always tries an upsell. |
 | ☕ | **You** | The café owner. Approves anything over budget with one reply. |
 
-## What happens in a run (real numbers from the recorded run)
+## What happens in a run
 
-1. The owner asks **@Tofu** for a pantry check. Coffee beans run out **tomorrow**, oat milk in 3 days, flour in 6.
-   Tofu puts three tasks on the HQ room's board and mentions Mochi.
-2. **Mochi** calls `band_lookup_peers`, keeps the peers whose description says they're a supplier, and opens a
-   separate quote room with each of Shelly, Zippy and Foxy.
-3. The quotes come back. For each item Mochi picks the **cheapest supplier that arrives before the shelf runs empty**:
-   Shelly is cheapest for coffee but too slow, so coffee goes to Zippy. Oat milk goes to Foxy and flour to Shelly.
-4. Mochi's LLM decides what to ask for (it asked Zippy for $23.50/kg and Shelly for $10.50 a bag), and politely
-   declines Foxy's honey bundle 🍯. Each supplier's LLM decides how far to bend.
-   Final offers: **$413.10**, which is **$53.60 less than last month** (−11%).
-5. **Yuzu** flags that this is **$15.40 over** the weekly budget. Mochi raises an `attention` event, and the owner
-   replies "approve".
-6. Purchase orders go out, all three suppliers confirm, every task on the board turns green, and Yuzu logs the spend.
+```mermaid
+sequenceDiagram
+    autonumber
+    actor O as ☕ Owner
+    participant T as 🥕 Tofu
+    participant M as 🍊 Mochi
+    participant Y as 🪙 Yuzu
+    participant S as 🐢 🐦 🦊 Suppliers
+    Note over O,Y: ☕ Capy Café HQ room, with the task board
+    O->>T: @Tofu pantry check, please
+    T->>T: 3 restock tasks on the board
+    T->>M: @Mochi coffee runs out tomorrow
+    M->>M: band_lookup_peers finds 3 suppliers
+    Note over M,S: one quote room per supplier, created by Mochi
+    M->>S: @Supplier best price and delivery time?
+    S-->>M: quotes
+    M->>S: counter-offers (the LLM picks the ask, code clamps it)
+    S-->>M: final offers (each LLM decides how far to bend)
+    M->>Y: @Yuzu budget check, $413.10
+    Y-->>M: over budget by $15.40
+    M->>O: attention event (blocking review)
+    O-->>M: @Mochi approve
+    M->>S: purchase orders
+    S-->>M: confirmed
+    M->>Y: @Yuzu please log $413.10
+```
 
-The whole negotiation took **48 seconds** and produced 48 Band events across 4 rooms. Because the LLMs make
-the moves, every run lands on slightly different prices.
+Real numbers from the recorded run:
+
+1. The owner asks **@Tofu** for a pantry check. Coffee beans run out **tomorrow**, oat milk in 3 days and flour in 6.
+   Tofu puts three restock tasks on the HQ room's board and mentions Mochi.
+2. **Mochi** looks up its peers, keeps the three whose description says they're a supplier, and opens a titled quote
+   room with each one.
+3. The quotes arrive within seconds. For each item, Mochi picks the **cheapest supplier that delivers before the
+   shelf runs empty**. Shelly is cheapest for coffee but takes 4 days, so coffee goes to Zippy. Oat milk goes to
+   Foxy and flour to Shelly.
+4. Mochi's LLM picks each counter-offer, and each supplier's LLM decides how far to bend. Zippy came down from
+   $26.00 to **$23.50**/kg and Foxy from $2.95 to **$2.75** a carton. Shelly, already the cheapest, went from $11.50
+   to **$11.30** a bag (Mochi asked for $10.50). Mochi politely turned down Foxy's honey bundle 🍯. Haggling took
+   **$33.60** off the quotes.
+5. **Yuzu** finds that the **$413.10** order is **$15.40 over** what's left of the weekly budget. Mochi raises a
+   blocking `attention` event, the owner replies "approve", and Mochi resolves it.
+6. Purchase orders go out, all three suppliers confirm, every task turns green with its PO number, and Yuzu logs
+   the spend.
+
+Because the LLMs make the moves, every run lands on slightly different prices.
+
+## Band features in the code
+
+| Band feature | How CapyBargain uses it | Code |
+|---|---|---|
+| **@mention routing** | Every handoff is a mention: Tofu → Mochi → each supplier → Yuzu. Status updates mention the human, which keeps them informed without waking another agent. | [`CapyAgent.human`](capybargain/agents.py#L192) |
+| **Peer discovery** | Mochi calls `band_lookup_peers` and keeps the peers whose description starts with `Supplier ·`. No supplier is hard-wired. | [`Mochi.find_suppliers`](capybargain/agents.py#L588) |
+| **Agent-created rooms** | Mochi creates a titled quote room per supplier (`create_agent_chat`), adds the supplier (`add_participant`), and adds the owner so they can watch. | [`Mochi.request_quote`](capybargain/agents.py#L609) |
+| **Room task board (beta)** | Tofu creates one task per item. Mochi sets the board's goal, moves the tasks to `in_progress`, parks them in `in_review` while the owner decides, and completes each one with its PO number as a comment. | [`Tofu.handle`](capybargain/agents.py#L220) · [`Mochi.start_deal`](capybargain/agents.py#L540) · [order confirmed](capybargain/agents.py#L667) |
+| **Attention events** | A blocking `review` event asks the owner to approve the over-budget order. A second event with `resolves` closes it. | [`Mochi.on_budget`](capybargain/agents.py#L780) · [`Mochi.on_owner_reply`](capybargain/agents.py#L825) |
+| **Thought and task events** | Mochi's reasoning ("coffee beans: runs out in 1 day → Zippy") goes into the audit trail. A task event carries each quote room's id, so HQ links to every negotiation. | [`Mochi.send_counters`](capybargain/agents.py#L689) · [room link](capybargain/agents.py#L622) |
+| **Error events, settled turns** | A failing handler posts an `error` event instead of raising, because a raised error gets the message delivered again and a negotiation step would run twice. Every handler settles its turn. | [`CapyAgent.on_message`](capybargain/agents.py#L167) |
+| **Human API** | Plays the owner (open HQ, kick off, approve) and reads every room's messages and events back for the UI. | [`owner.py`](capybargain/owner.py#L60) · [`transcript.py`](capybargain/transcript.py#L96) |
+| **Agent API** | Reads the task board and each task's history back, with Mochi's key. | [`transcript.board`](capybargain/transcript.py#L69) |
+| **Python SDK** | Each agent is a `SimpleAdapter`, and all six run in one process. | [`run.py`](capybargain/run.py#L30) |
 
 ## LLM brains, with guardrails
 
@@ -48,34 +127,31 @@ flatters, Shelly is slow and steady, Yuzu is plain about money. The rest is a pa
 markdown tables and marker lines the other agents parse. The model can be as chatty as it likes without
 breaking a handoff.
 
-The LLM also makes the negotiation moves, inside limits enforced in [`capybargain/deal.py`](capybargain/deal.py):
+The LLM also makes the negotiation moves, inside limits enforced (and unit tested) in
+[`capybargain/deal.py`](capybargain/deal.py):
 
 | Decision | Made by | Guardrail (code) |
 |---|---|---|
-| Which supplier wins each item | Code | Cheapest one that delivers before the shelf runs empty |
-| What Mochi asks each supplier for | Mochi's LLM | Between 80% and 98% of the quote, on a nickel |
-| How far each supplier bends | Each supplier's LLM | Never below its floor or Mochi's ask, never above its quote |
+| Which supplier wins each item | Code | Cheapest one that delivers before the shelf runs empty ([`choose_winners`](capybargain/deal.py#L236)) |
+| What Mochi asks each supplier for | Mochi's LLM | Between 80% and 98% of the quote, on a nickel ([`ask_bounds`](capybargain/deal.py#L53), [`clamp_price`](capybargain/deal.py#L37)) |
+| How far each supplier bends | Each supplier's LLM | Never below its floor or Mochi's ask, never above its quote ([`concession_bounds`](capybargain/deal.py#L314)) |
 | Whether the order fits the budget | Code (Yuzu) | Over budget always goes to the human |
 
 Sentences that state a price are dropped from lines that sit on a price table, so the model can't contradict
-the numbers. You can also just talk to the herd: mention any agent in the Band app ("@Mochi why Zippy for the
-coffee?", "@Foxy what's in the honey bundle?") and it answers in character, from what it knows about the deal.
+the numbers ([`without_prices`](capybargain/llm.py#L89)). Any OpenAI-compatible endpoint works
+([`capybargain/llm.py`](capybargain/llm.py)). Without one, or when a call fails, the agents fall back to built-in
+lines and the same negotiation policy, so a run never stalls.
 
-Any OpenAI-compatible endpoint works ([`capybargain/llm.py`](capybargain/llm.py)). Without one, or when a call
-fails, the agents fall back to built-in lines and the same negotiation policy, so a run never stalls.
+You can also just talk to the herd. Mention any agent in the Band app ("@Mochi why Zippy for the coffee?",
+"@Foxy what's in the honey bundle?") and it answers in character, from what it knows about the deal.
 
-## How it uses Band
+## The Capy Onsen
 
-| Band feature | Where |
-|---|---|
-| **@mention routing.** Agents only wake up for messages that mention them; status updates mention the human, so no agent ping-pong. | [`capybargain/agents.py`](capybargain/agents.py) |
-| **Dynamic discovery.** Mochi finds suppliers at runtime with `band_lookup_peers` instead of hard-coded wiring. | `Mochi.find_suppliers` |
-| **Agent-created rooms.** One titled quote room per supplier, created and staffed by Mochi (`create_agent_chat`, `band_add_participant`). | `Mochi.request_quote` |
-| **Room task board (beta).** Tofu creates tasks, Mochi claims them, moves them to `in_review` while waiting for approval, and completes them with the PO number. | `Tofu.handle`, `Mochi.set_task*` |
-| **Attention events.** A blocking `review` event asks the owner to approve an over-budget order; a second event resolves it. | `Mochi.on_budget`, `Mochi.on_owner_reply` |
-| **Thought and task events.** Mochi's reasoning ("coffee runs out in 1 day → Zippy") is in the room's audit trail, and task events link HQ to every quote room. | `Mochi.send_counters` |
-| **Human API.** The owner's side (open HQ, kick off, approve) and the transcript capture for the UI. | [`capybargain/owner.py`](capybargain/owner.py), [`capybargain/transcript.py`](capybargain/transcript.py) |
-| **Band Python SDK.** Every agent is a `SimpleAdapter`; all six run in one process. | [`capybargain/run.py`](capybargain/run.py) |
+![The Capy Onsen at the approval moment: every Band room is a hot spring](docs/onsen.png)
+
+Every Band room is a hot spring. The characters bob, show typing dots and thought bubbles, and the quote board,
+task board and budget meter fill in as the agents work. The UI replays a recorded run, or follows a live one
+straight from Band.
 
 ## Run it
 
@@ -115,6 +191,40 @@ uv run python -m capybargain.ui_server
 ```
 
 **Tests:** `uv run pytest`
+
+## Notes for the Band team
+
+The primitives fit this problem well, and every rough edge we hit had a small workaround. Here is what we learned.
+
+**What worked well**
+
+- **Mentions as the routing layer.** Six agents in four rooms needed no orchestrator. "Mention the human for status"
+  turned out to be a clean way to keep people informed without waking an agent.
+- **Rooms that agents create.** Mochi opening its own titled quote rooms kept the negotiations private, parallel and
+  easy to audit.
+- **Attention events.** Human-in-the-loop approval is one event to raise it and one to resolve it.
+- **The Human API.** Scripting the owner and reading a whole run back is what made the replay UI and the video
+  possible.
+
+**Rough edges, and our workarounds**
+
+1. **Every message needs a mention.** Our first run stalled on a plain "On it!" status line
+   (`At least one mention is required`). We now mention the human. A mention-free status message, or this rule in
+   the SDK's `send_message` docstring, would help.
+2. **Band inserts mention tokens itself.** It adds `@[[id]]` tokens to the content, so a hand-typed "@Name" shows the
+   name twice. We let the platform own mentions.
+3. **Messages into another room don't settle the turn.** A message an agent posts into a different room doesn't count
+   as a reply in the current one, so each handler ends with `no_reply` when it has nothing to say there. A warning
+   when a turn ends unsettled would help.
+4. **Response shapes differ.** `send_event` returns the new event's id at the top level (`.id`), while most calls wrap
+   their result in `.data`. We read both.
+5. **Raising redelivers.** An exception in `on_message` gets the message delivered again. That's useful for a flaky
+   handler, but risky when a step has side effects: a counter-offer would go out twice. We post an `error` event
+   instead. A note about idempotency in the docs would help.
+6. **Agent keys are shown once.** We found no Human API call to rotate an agent's key, and deleting an agent that has
+   history needs `force=true`, which deletes the history too. So a "reset the demo" script has to choose between new
+   keys and keeping the recorded run.
+7. **Room files aren't on Band Cloud yet,** so Tofu reads a pantry snapshot instead of an uploaded inventory sheet.
 
 ## Project layout
 
