@@ -7,7 +7,7 @@ place the orders. The café owner, a human, starts the run and only steps in aga
 
 [![The recorded Band run at 2.5× speed: quote rooms open, quotes arrive, Mochi haggles, the owner approves, every task turns green](docs/demo.gif)](https://www.youtube.com/watch?v=qwdnISwI0pU)
 
-▶️ **[Watch the 2-minute demo on YouTube](https://www.youtube.com/watch?v=qwdnISwI0pU)** ([MP4](video/capybargain-demo.mp4)) · 🖼️ [Slides](https://claude.ai/artifact/9ydVFaXJdff9DaSjDDb17Z) · 📝 [Hackathon write-up](SUBMISSION.md) · 📜 [Raw Band transcript](runs/demo-transcript.json)
+▶️ **[Watch the 2-minute demo on YouTube](https://www.youtube.com/watch?v=qwdnISwI0pU)** ([MP4](video/capybargain-demo.mp4)) · 🎭 [v2, hosted by Mochi on Masky](video/capybargain-demo-v2.mp4) · 🖼️ [Slides](https://claude.ai/artifact/9ydVFaXJdff9DaSjDDb17Z) · 📝 [Hackathon write-up](SUBMISSION.md) · 📜 [Raw Band transcript](runs/demo-transcript.json)
 
 <sub>The GIF is the recorded run at 2.5× speed, rebuilt from Band's own record of it. Click it to watch the narrated video.</sub>
 
@@ -72,8 +72,11 @@ its avatar. The Band message links to the Masky player, which plays the talking-
 All other traffic stays in Band text, where the agents parse it.
 
 ▶️ **[Watch Mochi ask for approval on Masky](https://masky.ai/t-26-10-4lbc)** (14 seconds, rendered by Masky,
-[MP4](docs/masky/mochi-approval.mp4)). There's also a 2:17 cut of the demo with this clip in it:
-[`video/capybargain-demo-masky.mp4`](video/capybargain-demo-masky.mp4).
+[MP4](docs/masky/mochi-approval.mp4)).
+
+🎭 **The v2 demo is hosted by Mochi on Masky** ([`video/capybargain-demo-v2.mp4`](video/capybargain-demo-v2.mp4),
+2:33): every spoken line is Mochi's Masky avatar, lip-synced in a face-cam beside the real Band run, with a scene on
+how the avatar was made and Mochi's real approval clip at the moment it asks the owner.
 
 | Agent | Masky voice | Status |
 |---|---|---|
@@ -287,7 +290,7 @@ capybargain/
   transcript.py    reads a whole run back out of Band (messages, events, task board)
   ui_server.py     serves the UI and a live feed of the newest run
 web/               the Capy Onsen: replay and live views, plus the video director
-video/             demo video: narration script, timeline, soundtrack builder, frame renderer
+video/             demo video: narration scripts (v2 is voiced on Masky), timelines, soundtrack builder, frame renderer
 runs/              the recorded demo run
 tests/             negotiation tests
 ```
@@ -304,6 +307,16 @@ python3 -m http.server 8765 --bind 127.0.0.1 &
 NODE_PATH=$(npm root -g) node video/render.cjs          # frames → ffmpeg → video/capybargain-demo.mp4
 ```
 
+The v2 cut is voiced on Masky ([`video/narration-v2.md`](video/narration-v2.md)). It needs `MASKY_API_KEY` and
+Mochi's avatar (`python -m capybargain.masky setup`):
+
+```bash
+uv run python video/masky_narration.py                   # renders every line on Masky → video/build/v2/
+uv run --with numpy python video/soundtrack.py --cut v2  # → video/timeline-v2.json
+uv run python video/masky_narration.py host              # Mochi's face-cam frames, laid on that timeline
+NODE_PATH=$(npm root -g) node video/render.cjs --cut v2  # → video/capybargain-demo-v2.mp4
+```
+
 The music is synthesized in `video/soundtrack.py`, and all the characters are original SVG in
 [`web/art.js`](web/art.js).
 
@@ -317,5 +330,6 @@ The music is synthesized in `video/soundtrack.py`, and all the characters are or
 - **The pantry is a fixed snapshot,** because room file uploads aren't available on Band Cloud yet. A real
   café would feed it from its point-of-sale system.
 - **Masky came in late.** Mochi's avatar and clip are real. Masky's free plan allows one avatar, so the other five
-  are defined in code and created by `setup` on a Creator account. The recorded Band run and the 2-minute video
-  were made before the Masky integration, so they don't show the avatar.
+  are defined in code and created by `setup` on a Creator account. The recorded Band run predates the Masky
+  integration, so its approval message has no Masky link; the v2 video plays Mochi's real approval clip at that
+  moment instead.

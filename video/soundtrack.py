@@ -12,10 +12,12 @@ The music is synthesized here: a little music-box loop over a soft bass and
 pad, so the whole soundtrack is original.
 
     uv run --with numpy python video/soundtrack.py
+    uv run --with numpy python video/soundtrack.py --cut v2   # video/build/v2/ → video/timeline-v2.json
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import subprocess
 from pathlib import Path
@@ -29,7 +31,7 @@ SR = 44100
 LEAD_IN = 0.9  # music before the first word
 TAIL = 2.6  # music after the last word
 GAP = 0.45  # extra pause between scenes
-GAP_BEFORE = {4: 0.9, 8: 0.8}  # longer breaths before the live run and the recap
+GAP_BEFORE = {3.5: 0.7, 4: 0.9, 6.5: 0.7, 6.6: 0.4, 8: 0.8}  # longer breaths before big moments (3.5 and 6.x: v2 only)
 
 
 def decode(path: Path) -> np.ndarray:
@@ -115,6 +117,8 @@ def music(duration: float) -> np.ndarray:
 
     def add(sig: np.ndarray, at: float, gain: float, pan: float = 0.0) -> None:
         i = int(at * SR)
+        if i >= len(out):
+            return
         j = min(len(out), i + len(sig))
         out[i:j] += sig[: j - i] * gain * (1 - pan)
         left[i:j] += sig[: j - i] * gain * (1 + pan)
@@ -148,8 +152,12 @@ def duck_envelope(n: int, timeline: list[dict]) -> np.ndarray:
 
 
 def main() -> None:
-    alignment = json.loads((BUILD / "alignment.json").read_text())
-    voice = decode(BUILD / "narration.mp3")
+    parser = argparse.ArgumentParser(description="Build the soundtrack and timeline for a cut of the demo video.")
+    parser.add_argument("--cut", default="", help="read video/build/<cut>/ and write video/timeline-<cut>.json")
+    cut = parser.parse_args().cut
+    build = BUILD / cut if cut else BUILD
+    alignment = json.loads((build / "alignment.json").read_text())
+    voice = decode(build / "narration.mp3")
     voice *= 0.89 / np.abs(voice).max()
     narration, timeline = assemble_narration(voice, alignment["scenes"])
     duration = len(narration) / SR
@@ -164,16 +172,16 @@ def main() -> None:
     mix *= 0.97 / max(1.0, np.abs(mix).max())
     pcm = (mix * 32767).astype("<i2")
     subprocess.run(
-        ["ffmpeg", "-v", "error", "-y", "-f", "s16le", "-ar", str(SR), "-ac", "2", "-i", "-", str(BUILD / "soundtrack.wav")],
+        ["ffmpeg", "-v", "error", "-y", "-f", "s16le", "-ar", str(SR), "-ac", "2", "-i", "-", str(build / "soundtrack.wav")],
         input=pcm.tobytes(),
         check=True,
     )
-    (HERE / "timeline.json").write_text(
+    (HERE / (f"timeline-{cut}.json" if cut else "timeline.json")).write_text(
         json.dumps({"duration": round(duration, 3), "fps": 30, "scenes": timeline}, indent=1, ensure_ascii=False)
     )
-    print(f"soundtrack {duration:.2f}s → {BUILD / 'soundtrack.wav'}")
+    print(f"soundtrack {duration:.2f}s → {build / 'soundtrack.wav'}")
     for s in timeline:
-        print(f"  {s['n']:>2} {s['name']:<22} {s['start']:7.2f} → {s['end']:7.2f}")
+        print(f"  {s['n']:>3} {s['name']:<22} {s['start']:7.2f} → {s['end']:7.2f}")
 
 
 if __name__ == "__main__":

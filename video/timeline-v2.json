@@ -1,0 +1,102 @@
+{
+ "duration": 152.594,
+ "fps": 30,
+ "scenes": [
+  {
+   "n": 1,
+   "name": "Title",
+   "text": "Hi! This is Mochi. Mochi is a capybara, and Mochi runs purchasing for a tiny café.",
+   "start": 0.9,
+   "end": 6.795,
+   "lead": 0.0
+  },
+  {
+   "n": 2,
+   "name": "The problem",
+   "text": "Small cafés overpay for supplies. Comparing quotes means phone tag, emails and spreadsheets, so most owners just reorder from the same supplier at the same price every week.",
+   "start": 7.445,
+   "end": 17.975,
+   "lead": 0.0
+  },
+  {
+   "n": 3,
+   "name": "Meet the herd",
+   "text": "So we built CapyBargain: a purchasing department run by AI agents on Band, each one thinking with its own LLM. Tofu counts the pantry, Yuzu guards the budget, and Mochi does the haggling. The suppliers are agents too: Shelly the tortoise, Zippy the hummingbird and Foxy the fox. Capybaras get along with everyone!",
+   "start": 18.625,
+   "end": 38.879,
+   "lead": 0.0
+  },
+  {
+   "n": 3.5,
+   "name": "Mochi on Masky",
+   "text": "And this face? It's Mochi's Masky avatar! Masky made Mochi's portrait, gave Mochi a voice, and knows Mochi's personality. Every word in this video is Mochi on Masky, lip-synced. So when a person needs to hear from the herd, Mochi can ask on camera.",
+   "start": 39.779,
+   "end": 55.636,
+   "lead": 0.0
+  },
+  {
+   "n": 4,
+   "name": "Live run: kickoff",
+   "text": "Here's a real run on Band. The owner asks Tofu for a pantry check. Uh oh, coffee runs out tomorrow! Tofu puts three tasks on the board and mentions Mochi, who looks up its peers, finds three suppliers, and opens a quote room with each.",
+   "start": 56.736,
+   "end": 71.818,
+   "lead": 0.0
+  },
+  {
+   "n": 5,
+   "name": "Live run: haggling",
+   "text": "Quotes come back in seconds. Shelly is cheapest, but slow and steady takes four days, too late for coffee. So for each item, Mochi picks the cheapest supplier that arrives in time, then haggles, and each supplier decides how far to bend. Foxy tries to sneak in some honey. Mochi politely says no thank you.",
+   "start": 72.468,
+   "end": 91.125,
+   "lead": 0.086
+  },
+  {
+   "n": 6,
+   "name": "Live run: approval",
+   "text": "The final offers come to four hundred and thirteen dollars, about fifty-four dollars less than last month. But Yuzu spots that it's fifteen dollars over budget, so Mochi raises a paw and asks the owner, on camera.",
+   "start": 91.775,
+   "end": 104.018,
+   "lead": 0.0
+  },
+  {
+   "n": 6.5,
+   "name": "Mochi's approval clip",
+   "text": "Hi boss! I found a deal: 413 dollars for the pantry, about 54 dollars less than last month. It's 15 dollars over this week's budget, so may I place the order?",
+   "start": 104.918,
+   "end": 116.572,
+   "lead": 0.0
+  },
+  {
+   "n": 6.6,
+   "name": "Approved",
+   "text": "One reply: approved!",
+   "start": 117.172,
+   "end": 119.016,
+   "lead": 0.0
+  },
+  {
+   "n": 7,
+   "name": "Live run: orders",
+   "text": "Purchase orders go out, all three suppliers confirm, and every task turns green.",
+   "start": 119.666,
+   "end": 124.494,
+   "lead": 0.0
+  },
+  {
+   "n": 8,
+   "name": "Why Band and Masky",
+   "text": "Every step is a real Band message. Mentions route the work, peer lookup finds suppliers, the task board tracks progress, and attention events keep a human in charge. And each supplier could live in its own company's Band account, connected by a contact request. Masky gives the whole herd faces and voices.",
+   "start": 125.494,
+   "end": 144.72,
+   "lead": 0.0
+  },
+  {
+   "n": 9,
+   "name": "Outro",
+   "text": "CapyBargain. Capybaras are friends with everyone… even your suppliers!",
+   "start": 145.37,
+   "end": 149.854,
+   "lead": 0.087
+  }
+ ]
+}

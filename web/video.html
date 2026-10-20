@@ -12,6 +12,7 @@
   <script type="module">
     // ?t=42      show one frame
     // ?play      play in real time with the soundtrack (video/build/soundtrack.wav)
+    // ?cut=v2    the v2 cut, hosted by Mochi on Masky (video/timeline-v2.json)
     import { createDirector } from "./director.js";
 
     const root = document.getElementById("root");
@@ -24,13 +25,14 @@
     await document.fonts.ready;
 
     const params = new URLSearchParams(location.search);
-    const director = await createDirector(root);
+    const cut = params.get("cut") || "";
+    const director = await createDirector(root, { cut });
     window.director = director;
     window.renderAt = director.renderAt;
     director.renderAt(parseFloat(params.get("t") ?? "0"));
 
     if (params.has("play")) {
-      const audio = new Audio("../video/build/soundtrack.wav");
+      const audio = new Audio(`../video/build/${cut ? `${cut}/` : ""}soundtrack.wav`);
       document.body.addEventListener("click", () => audio.play(), { once: true });
       const frame = () => {
         director.renderAt(audio.currentTime);

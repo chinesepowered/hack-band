@@ -1,6 +1,6 @@
 # CapyBargain: a purchasing department run by AI capybaras
 
-**Built on Band** · 🎬 [2-minute demo on YouTube](https://www.youtube.com/watch?v=qwdnISwI0pU) ([MP4](video/capybargain-demo.mp4)) · 🖼️ [Slides](https://claude.ai/artifact/9ydVFaXJdff9DaSjDDb17Z) · 🎭 Faces and voices by [Masky](https://masky.ai)
+**Built on Band** · 🎬 [2-minute demo on YouTube](https://www.youtube.com/watch?v=qwdnISwI0pU) ([MP4](video/capybargain-demo.mp4)) · 🎭 [v2, hosted by Mochi on Masky](video/capybargain-demo-v2.mp4) · 🖼️ [Slides](https://claude.ai/artifact/9ydVFaXJdff9DaSjDDb17Z) · 🎭 Faces and voices by [Masky](https://masky.ai)
 
 ## Inspiration
 

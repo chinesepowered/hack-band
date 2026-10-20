@@ -1,11 +1,12 @@
 // Render web/video.html frame by frame into video/capybargain-demo.mp4.
 //
 //   python3 -m http.server 8765 --bind 127.0.0.1      (from the repo root)
-//   NODE_PATH=$(npm root -g) node video/render.cjs [--workers 4] [--from 0 --to 121]
+//   NODE_PATH=$(npm root -g) node video/render.cjs [--workers 4] [--from 0 --to 121] [--cut v2]
 //
 // Each worker steps its own Chromium page through a slice of the timeline
 // (window.renderAt(t) is deterministic), pipes JPEG frames into ffmpeg, and
-// the slices are joined and muxed with video/build/soundtrack.wav.
+// the slices are joined and muxed with video/build/soundtrack.wav. --cut v2 renders
+// web/video.html?cut=v2 from video/timeline-v2.json and video/build/v2/ instead.
 
 const { chromium } = require("playwright");
 const { spawn, execFileSync } = require("child_process");
@@ -15,10 +16,11 @@ const path = require("path");
 const args = Object.fromEntries(
   process.argv.slice(2).reduce((acc, a, i, all) => (a.startsWith("--") ? [...acc, [a.slice(2), all[i + 1]]] : acc), [])
 );
-const URL = args.url || "http://127.0.0.1:8765/web/video.html";
+const CUT = args.cut || "";
+const URL = args.url || `http://127.0.0.1:8765/web/video.html${CUT ? `?cut=${CUT}` : ""}`;
 const WORKERS = parseInt(args.workers || "4", 10);
-const BUILD = path.join(__dirname, "build");
-const OUT = path.join(__dirname, args.out || "capybargain-demo.mp4");
+const BUILD = path.join(__dirname, "build", CUT);
+const OUT = path.join(__dirname, args.out || (CUT ? `capybargain-demo-${CUT}.mp4` : "capybargain-demo.mp4"));
 
 async function renderSlice(k, first, last, fps) {
   const browser = await chromium.launch();
@@ -52,7 +54,7 @@ async function renderSlice(k, first, last, fps) {
 
 (async () => {
   fs.mkdirSync(BUILD, { recursive: true });
-  const timeline = JSON.parse(fs.readFileSync(path.join(__dirname, "timeline.json"), "utf8"));
+  const timeline = JSON.parse(fs.readFileSync(path.join(__dirname, CUT ? `timeline-${CUT}.json` : "timeline.json"), "utf8"));
   const fps = timeline.fps;
   const from = Math.round(parseFloat(args.from || "0") * fps);
   const to = Math.round(parseFloat(args.to || String(timeline.duration)) * fps);

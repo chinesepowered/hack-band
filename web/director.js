@@ -15,28 +15,52 @@ const backOut = (x) => {
 };
 const pop = (t, at, dur = 0.45) => ({ k: backOut((t - at) / dur), o: clamp01((t - at) / 0.18) });
 
-export async function createDirector(root) {
+const HOST_HTML = `
+  <div class="host">
+    <div class="host-eyebrow">On camera</div>
+    <div class="host-ring"></div>
+    <div class="host-away">on the big screen</div>
+    <div class="host-name">Mochi 🍊</div>
+    <div class="host-role">head buyer · Masky avatar</div>
+    <div class="host-bars">${"<i></i>".repeat(7)}</div>
+    <div class="host-label">The rest of the herd</div>
+    <div class="host-herd">${["Tofu", "Yuzu", "Shelly", "Zippy", "Foxy"].map((n) => `<div data-name="${n}"></div>`).join("")}</div>
+    <div class="host-by">faces &amp; voices by</div>
+    <div class="host-masky">Masky</div>
+  </div>
+  <img class="cam" alt="Mochi's Masky avatar">
+  <div class="cam-tag">🎭 Mochi · on Masky</div>
+  <div class="cam-ask">📱 What the owner sees: Mochi asks on Masky</div>`;
+
+// The v2 cut (?cut=v2) is hosted by Mochi on Masky: the demo plays on a screen,
+// Mochi's lip-synced Masky avatar narrates from a face-cam beside it, scene 3.5
+// introduces the avatar, and scene 6.5 is Mochi's real approval clip.
+export async function createDirector(root, { cut = "" } = {}) {
+  const v2 = cut === "v2";
   const [timeline, transcript] = await Promise.all([
-    fetch("../video/timeline.json").then((r) => r.json()),
+    fetch(`../video/timeline${cut ? `-${cut}` : ""}.json`).then((r) => r.json()),
     fetch("../runs/demo-transcript.json").then((r) => r.json()),
   ]);
   const model = buildModel(transcript);
   const scene = (n) => timeline.scenes.find((s) => s.n === n);
   const cue = (n, phrase) => {
-    const s = scene(n);
-    const i = s.text.indexOf(phrase);
-    if (i < 0) throw new Error(`cue not found: ${phrase}`);
-    return s.start + (i / s.text.length) * (s.end - s.start);
+    // v2 moves a few phrases into new scenes (6.6), so fall back to any scene.
+    const s = [scene(n), ...timeline.scenes].find((x) => x && x.text.includes(phrase));
+    if (!s) throw new Error(`cue not found: ${phrase}`);
+    return s.start + (s.text.indexOf(phrase) / s.text.length) * (s.end - s.start);
   };
   const visualStart = (n) => (n === 1 ? 0 : scene(n).start - 0.35);
+  const maskyScene = v2 && scene(3.5);
   const WINDOWS = [
     { id: "title", from: 0, to: visualStart(2) },
     { id: "problem", from: visualStart(2), to: visualStart(3) },
-    { id: "herd", from: visualStart(3), to: visualStart(4) },
+    { id: "herd", from: visualStart(3), to: visualStart(maskyScene ? 3.5 : 4) },
+    ...(maskyScene ? [{ id: "masky", from: visualStart(3.5), to: visualStart(4) }] : []),
     { id: "run", from: visualStart(4), to: visualStart(8) },
     { id: "why", from: visualStart(8), to: visualStart(9) },
     { id: "outro", from: visualStart(9), to: timeline.duration + 1 },
   ];
+  const RUN = WINDOWS.find((w) => w.id === "run");
 
   // --- schedule every Band event onto the narration ----------------------------------
   const BEATS = [
@@ -98,15 +122,21 @@ export async function createDirector(root) {
   }
 
   // --- DOM ------------------------------------------------------------------------------------
+  root.classList.toggle("v2", v2);
   root.innerHTML = `
-    <div class="stage onsen-stage"></div>
-    <div class="layer title"></div>
-    <div class="layer problem"></div>
-    <div class="layer herd"></div>
-    <div class="layer why"></div>
-    <div class="layer outro"></div>
-    <svg class="spot" viewBox="0 0 1920 1080"><path fill="rgba(42,29,21,.5)" fill-rule="evenodd" d=""/></svg>
-    <div class="toast"></div>
+    <div class="screen">
+      <div class="stage onsen-stage"></div>
+      <div class="layer title"></div>
+      <div class="layer problem"></div>
+      <div class="layer herd"></div>
+      ${maskyScene ? `<div class="layer masky"></div>` : ""}
+      <div class="layer why"></div>
+      <div class="layer outro"></div>
+      <svg class="spot" viewBox="0 0 1920 1080"><path fill="rgba(42,29,21,.5)" fill-rule="evenodd" d=""/></svg>
+      <div class="toast"></div>
+      <div class="dim"></div>
+    </div>
+    ${v2 ? HOST_HTML : ""}
     <div class="caption vcap"></div>`;
   const onsenStage = root.querySelector(".onsen-stage");
   const onsen = new Onsen(onsenStage, model, { badge: "Real Band run" });
@@ -160,13 +190,14 @@ export async function createDirector(root) {
       } else if (w.id === "title") renderTitle(layers.title, t, lt);
       else if (w.id === "problem") renderProblem(layers.problem, t);
       else if (w.id === "herd") renderHerd(layers.herd, t);
+      else if (w.id === "masky") renderMasky(layers.masky, t);
       else if (w.id === "why") renderWhy(layers.why, t);
       else renderOutro(layers.outro, t);
     }
 
     // spotlight
     const active = SPOTS.filter(([a, d]) => t >= a - 0.3 && t <= a + d + 0.3);
-    if (active.length && t >= WINDOWS[3].from && t < WINDOWS[3].to) {
+    if (active.length && t >= RUN.from && t < RUN.to) {
       const [a, d, sels] = active[active.length - 1];
       const o = Math.min(clamp01((t - a + 0.3) / 0.3), clamp01((a + d + 0.3 - t) / 0.3));
       let path = "M0 0H1920V1080H0Z";
@@ -198,6 +229,85 @@ export async function createDirector(root) {
     const cap = captions.find((c) => t >= c.start && t < c.end);
     caption.style.display = cap ? "" : "none";
     if (cap && caption.textContent !== cap.text) caption.textContent = cap.text;
+
+    if (v2) return renderHost(t);
+  }
+
+  // --- v2: Mochi's face-cam -------------------------------------------------------------------
+  // The cam shows video/build/v2/host/<frame>.jpg: Mochi's Masky clips laid on the
+  // timeline (video/masky_narration.py host). It sits in the side panel, grows over
+  // the screen for scene 3.5, and moves center stage while Mochi asks the owner.
+  const CAM = {
+    slot: { x: 1630, y: 150, s: 220 },
+    big: { x: 136, y: 196, s: 620 },
+    ask: { x: 790, y: 226, s: 560 },
+  };
+  const askScene = v2 && scene(6.5);
+  const window01 = (t, a, b, ramp = 0.6) => Math.min(clamp01((t - a) / ramp), clamp01((b - t) / ramp));
+  const smooth = (x) => x * x * (3 - 2 * x);
+  const mix = (a, b, k) => ({ x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k, s: a.s + (b.s - a.s) * k });
+  const speaking = (t) => timeline.scenes.some((s) => t >= s.start && t <= s.end);
+  const host = v2 && {
+    cam: root.querySelector(".cam"),
+    tag: root.querySelector(".cam-tag"),
+    ask: root.querySelector(".cam-ask"),
+    bars: [...root.querySelectorAll(".host-bars i")],
+    away: root.querySelector(".host-away"),
+    herd: root.querySelector(".host-herd"),
+    dim: root.querySelector(".dim"),
+  };
+
+  function renderHost(t) {
+    const kBig = maskyScene ? smooth(window01(t, scene(3.5).start - 0.75, scene(4).start - 0.75)) : 0;
+    const kAsk = askScene ? smooth(window01(t, scene(6.5).start - 0.8, scene(6.6).start - 0.15)) : 0;
+    const r = mix(mix(CAM.slot, CAM.big, kBig), CAM.ask, kAsk);
+    const away = Math.max(kBig, kAsk);
+    host.cam.style.cssText = `left:${r.x}px;top:${r.y}px;width:${r.s}px;height:${r.s}px;border-radius:${(r.s / 2) * (1 - away) + 44 * away}px`;
+    host.tag.style.cssText = `left:${r.x + r.s / 2}px;top:${r.y + r.s - 26}px;transform:translateX(-50%) scale(${1 + 0.35 * away})`;
+    host.ask.style.cssText = `left:${CAM.ask.x + CAM.ask.s / 2}px;top:${CAM.ask.y - 86}px;opacity:${kAsk};transform:translateX(-50%) translateY(${(1 - kAsk) * 20}px)`;
+    host.dim.style.opacity = String(0.55 * kAsk);
+    host.away.style.opacity = String(away);
+    const talk = speaking(t);
+    host.bars.forEach((bar, i) => {
+      const h = talk ? 10 + 26 * Math.abs(Math.sin(t * (7 + i * 1.7) + i * 1.3)) : 6;
+      bar.style.height = `${h.toFixed(1)}px`;
+    });
+    host.herd.querySelectorAll("[data-name]").forEach((el, i) => {
+      const name = el.dataset.name;
+      const html = character(name, { eyes: blinkEyes(name, t), t });
+      if (el._html !== html) el.innerHTML = el._html = html;
+      el.style.transform = `translateY(${Math.sin(t * 1.4 + i) * 3}px)`;
+    });
+    const frame = String(Math.max(0, Math.round(t * timeline.fps))).padStart(5, "0");
+    const src = `../video/build/v2/host/${frame}.jpg`;
+    if (host.cam.getAttribute("src") === src) return undefined;
+    host.cam.setAttribute("src", src);
+    return host.cam.decode().catch(() => {});
+  }
+
+  // --- v2: scene 3.5, Mochi on Masky ------------------------------------------------------
+  const MASKY = [
+    ["🖼️", "A portrait, made on Masky", "generated from a prompt, then animated", "made Mochi's portrait"],
+    ["🎙️", "A Masky voice", "“Expressive Girl”, one of Masky's preset voices", "gave Mochi a voice"],
+    ["💬", "Mochi's own personality", "the same persona Mochi's LLM uses on Band", "Mochi's personality"],
+    ["🎬", "Lip-synced on camera", "every line in this video, rendered by Masky", "lip-synced"],
+  ];
+  function buildMasky(el) {
+    el.innerHTML = `
+      <div class="m-frame"></div>
+      <div class="m-title">Mochi, on <span>Masky</span></div>
+      <div class="m-list">${MASKY.map(([icon, title, line]) => `<div class="m-row"><div class="m-icon">${icon}</div><div><b>${title}</b><span>${line}</span></div></div>`).join("")}</div>
+      <div class="m-api"><span>POST /api/conversations/{id}/turn</span><span>{ "mode": "speak", "output": "video" }</span></div>`;
+  }
+  function renderMasky(el, t) {
+    const title = pop(t, scene(3.5).start - 0.2);
+    el.querySelector(".m-title").style.cssText = `opacity:${title.o};transform:scale(${0.8 + 0.2 * title.k})`;
+    el.querySelectorAll(".m-row").forEach((row, i) => {
+      const p = pop(t, cue(3.5, MASKY[i][3]));
+      row.style.cssText = `opacity:${p.o};transform:translateX(${(1 - p.k) * 80}px)`;
+    });
+    const api = pop(t, cue(3.5, "lip-synced") + 0.6);
+    el.querySelector(".m-api").style.cssText = `opacity:${api.o};transform:translateY(${(1 - api.k) * 30}px)`;
   }
 
   // --- scene builders ------------------------------------------------------------------------
@@ -237,7 +347,7 @@ export async function createDirector(root) {
   function buildTitle(el) {
     el.innerHTML = `
       <div class="t-title"><span class="capy">Capy</span><span class="bar">Bargain</span></div>
-      <div class="t-sub">A purchasing department run by AI capybaras · built on <b>Band</b></div>
+      <div class="t-sub">A purchasing department run by AI capybaras · built on <b>Band</b>${v2 ? " · voiced on <b>Masky</b>" : ""}</div>
       <div class="t-pool">${springSVG(1920, 600, 200)}<div class="t-mochi"></div><svg class="t-front" viewBox="0 0 1920 600" preserveAspectRatio="none"></svg></div>
       <div class="t-sign">☕ Capy Café</div>
       <div class="t-tag">Mochi 🍊 <em>head buyer</em></div>`;
@@ -353,7 +463,7 @@ export async function createDirector(root) {
     el.innerHTML = `
       <div class="w-title">Every step is a real Band message</div>
       <div class="w-grid">${WHY.map(([icon, title, line]) => `<div class="w-tile"><div class="w-icon">${icon}</div><div><b>${title}</b><span>${line}</span></div></div>`).join("")}</div>
-      <div class="w-stats"><span>6 agents</span><span>4 rooms</span><span>${model.events.length} Band events</span><span>1 human approval</span></div>
+      <div class="w-stats"><span>6 agents</span><span>4 rooms</span><span>${model.events.length} Band events</span><span>1 human approval</span>${v2 ? "<span>🎭 voiced on Masky</span>" : ""}</div>
       <div class="w-mochi"></div>`;
   }
   function renderWhy(el, t) {
@@ -380,7 +490,7 @@ export async function createDirector(root) {
       <div class="o-line">Capybaras are friends with everyone… even your suppliers! 💛</div>
       <div class="o-stats"><span>🧾 ${receiptTotal} restocked</span><span>💰 ${receiptSaved} saved</span><span>⏱️ ${Math.round(model.duration)}-second run</span><span>🍊 6 agents on Band</span></div>
       <div class="o-pool">${springSVG(1920, 620, 170)}${OUTRO_CAST.map((n) => `<div class="o-who" data-name="${n}"></div>`).join("")}<svg class="o-front" viewBox="0 0 1920 620" preserveAspectRatio="none"></svg></div>
-      <div class="o-foot">github.com/chinesepowered/hack-band</div>`;
+      <div class="o-foot">github.com/chinesepowered/hack-band${v2 ? " · faces &amp; voices by Masky" : ""}</div>`;
   }
   function renderOutro(el, t) {
     const s = scene(9).start;
@@ -406,6 +516,7 @@ export async function createDirector(root) {
   buildTitle(layers.title);
   buildProblem(layers.problem);
   buildHerd(layers.herd);
+  if (maskyScene) buildMasky(layers.masky);
   buildWhy(layers.why);
   buildOutro(layers.outro);
 

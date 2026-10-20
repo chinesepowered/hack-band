@@ -209,3 +209,121 @@ body { background: #1d140e; }
   display: none;
 }
 .vcap { z-index: 70; }
+
+/* --- v2: Mochi hosts on Masky (?cut=v2) ---------------------------------------------------------------- */
+.screen { position: absolute; inset: 0; }
+.dim { position: absolute; inset: 0; z-index: 40; background: #1d140e; opacity: 0; pointer-events: none; }
+.video-root.v2 { background: radial-gradient(circle at 88% 12%, #fff 0, transparent 34%), linear-gradient(135deg, #ffe9c9, #ffd59e); }
+.v2 .screen {
+  inset: auto;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  transform: translate(40px, 56px) scale(0.8);
+  transform-origin: 0 0;
+  border-radius: 56px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(80, 45, 15, 0.35);
+}
+.v2 .caption { left: 808px; bottom: 26px; max-width: 1480px; }
+.host {
+  position: absolute;
+  left: 1600px;
+  top: 56px;
+  width: 280px;
+  height: 864px;
+  background: #fffaf2;
+  border-radius: 44px;
+  box-shadow: 0 24px 60px rgba(80, 45, 15, 0.28);
+}
+.host > * { position: absolute; left: 0; right: 0; text-align: center; }
+.host-eyebrow { top: 32px; font-weight: 800; font-size: 22px; letter-spacing: 4px; text-transform: uppercase; color: #9a5208; }
+.host-ring { left: 24px; right: auto; top: 88px; width: 232px; height: 232px; border-radius: 50%; background: #f0a020; box-shadow: 0 0 0 6px #ffe2a8; }
+.host-away { top: 190px; font-weight: 800; font-size: 22px; color: #fff8ee; opacity: 0; }
+.host-name { top: 344px; font-family: var(--heading); font-weight: 700; font-size: 40px; }
+.host-role { top: 398px; font-weight: 800; font-size: 20px; color: var(--ink-soft); }
+.host-bars { top: 436px; height: 44px; display: flex; justify-content: center; align-items: center; gap: 7px; }
+.host-bars i { display: block; width: 9px; height: 6px; border-radius: 6px; background: #f0a020; }
+.host-label { top: 512px; font-weight: 800; font-size: 20px; color: var(--ink-soft); }
+.host-herd { top: 548px; left: 22px; right: 22px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; justify-items: center; }
+.host-herd div { width: 74px; }
+.host-by { top: 756px; font-weight: 800; font-size: 20px; color: var(--ink-soft); }
+.host-masky { top: 780px; font-family: var(--heading); font-weight: 700; font-size: 60px; color: var(--ink); }
+.cam {
+  position: absolute;
+  z-index: 80;
+  box-sizing: border-box;
+  object-fit: cover;
+  border: 6px solid #fffaf2;
+  background: #f3dcc0;
+  box-shadow: 0 18px 50px rgba(46, 28, 18, 0.35);
+}
+.cam-tag {
+  position: absolute;
+  z-index: 81;
+  background: var(--ink);
+  color: #fff8ee;
+  font-weight: 800;
+  font-size: 20px;
+  padding: 6px 16px 7px;
+  border-radius: 999px;
+  white-space: nowrap;
+  transform-origin: 50% 0;
+}
+.cam-ask {
+  position: absolute;
+  z-index: 81;
+  background: #fffaf2;
+  font-family: var(--heading);
+  font-weight: 600;
+  font-size: 34px;
+  padding: 10px 28px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+}
+
+/* scene 3.5: Mochi on Masky (the big cam sits over .m-frame) */
+.m-frame { left: 92px; top: 147px; width: 831px; height: 831px; border-radius: 76px; background: radial-gradient(circle, #fff 0, #ffe3b3 70%); }
+.m-title { left: 980px; top: 140px; font-family: var(--heading); font-weight: 700; font-size: 92px; white-space: nowrap; transform-origin: 0 50%; }
+.m-title span { color: var(--yuzu-deep); }
+.m-list { left: 980px; top: 286px; width: 860px; display: flex; flex-direction: column; gap: 18px; }
+.m-row {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  background: #fff;
+  border-radius: 30px;
+  border: 3px solid var(--line);
+  box-shadow: var(--shadow);
+  padding: 16px 26px;
+}
+.m-icon {
+  width: 88px;
+  height: 88px;
+  flex: none;
+  border-radius: 26px;
+  background: var(--yuzu-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 50px;
+}
+.m-row b { display: block; font-family: var(--heading); font-weight: 600; font-size: 40px; }
+.m-row span { font-size: 26px; font-weight: 700; color: var(--ink-soft); }
+.m-api {
+  left: 980px;
+  top: 872px;
+  width: 860px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--ink);
+  color: #ffe2a8;
+  border-radius: 24px;
+  padding: 18px 26px;
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 26px;
+}
