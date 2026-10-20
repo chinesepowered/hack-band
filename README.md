@@ -72,7 +72,8 @@ its avatar. The Band message links to the Masky player, which plays the talking-
 All other traffic stays in Band text, where the agents parse it.
 
 ▶️ **[Watch Mochi ask for approval on Masky](https://masky.ai/t-26-10-4lbc)** (14 seconds, rendered by Masky,
-[MP4](docs/masky/mochi-approval.mp4))
+[MP4](docs/masky/mochi-approval.mp4)). There's also a 2:17 cut of the demo with this clip in it:
+[`video/capybargain-demo-masky.mp4`](video/capybargain-demo-masky.mp4).
 
 | Agent | Masky voice | Status |
 |---|---|---|
