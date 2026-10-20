@@ -36,7 +36,7 @@ from band.core.types import PlatformMessage
 from band.runtime.tools.agent import AgentTools
 from band_rest import ChatRoomRequest
 
-from capybargain import deal, llm
+from capybargain import deal, llm, masky
 from capybargain.deal import money, plural
 from capybargain.pantry import (
     PANTRY,
@@ -150,6 +150,11 @@ class CapyAgent(SimpleAdapter[Any]):
 
     async def say(self, task: str, fallback: str, facts: str = "", prices: bool = True) -> str:
         return await llm.line(self.persona, task, fallback=fallback, facts=facts, prices=prices)
+
+    async def on_camera(self, voice: str) -> str:
+        """Say a line through the agent's Masky avatar too. Returns a link line for the Band message, or ""."""
+        link = await masky.speak(self.member.key, plain(voice))
+        return f"\n\n🎥 [Hear it from {self.member.name} on Masky]({link})" if link else ""
 
     def context(self) -> str:
         """What this agent knows right now, for answering people."""
@@ -815,7 +820,7 @@ class Mochi(CapyAgent):
         payload = (
             f"{summary}\n\n**Total {money(d.total)}** · **{money(saved)} less** than last month (−{pct}%) · "
             f"**{money(over)} over** this week's budget\n\nReply **@{MOCHI.name} approve** or **@{MOCHI.name} no**."
-        )
+        ) + await self.on_camera(voice)
         owner = d.owner or {}
         handle = owner.get("handle") or owner.get("name")
         await d.hq.send_message(compose(voice, payload), mentions=[handle] if handle else None)
@@ -906,7 +911,7 @@ class Mochi(CapyAgent):
             f"🎉 **All done!** {len(rows)} orders placed and confirmed:\n\n{table}\n\n"
             f"**Total {money(d.total)}** · saved **{money(saved)}** vs last month (−{pct}%)\n\n"
             f"Yuzu, please log {money(d.total)} (approved by the boss) 🪙"
-        )
+        ) + await self.on_camera(voice)
         await d.hq.send_message(compose(voice, payload), mentions=[YUZU.name, self.human(d.hq)])
         log.info("🎉 done: %s total, saved %s", money(d.total), money(saved))
         self.finished.set()

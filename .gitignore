@@ -8,3 +8,4 @@ node_modules/
 runs/*.log
 video/build/
 agent_config.yaml
+masky_avatars.json

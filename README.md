@@ -27,6 +27,9 @@ place the orders. The café owner, a human, starts the run and only steps in aga
 - **AI with guardrails.** Every agent thinks with an LLM (Qwen3.8-27B in the demo) that writes its lines in
   character, and the LLMs of Mochi and the suppliers make the negotiation moves. Code clamps every price, and
   anything over budget goes to the human.
+- **Masky avatars.** Every agent has a [Masky](https://masky.ai) avatar: a face, a voice and its personality. When
+  Mochi needs the owner, it says the line on camera through its avatar, and the Band message links to the Masky
+  player. [See how it works.](#masky-avatars-faces-and-voices)
 - **Feedback for Band.** [What worked well, and the rough edges we hit.](#notes-for-the-band-team)
 
 ## Why Band?
@@ -55,6 +58,40 @@ Buying supplies is a conversation between several parties, and most of them aren
 | 🐦 | **Zippy** | Supplier: Zippy Express Pantry. Next-day delivery at premium prices. |
 | 🦊 | **Foxy** | Supplier: Foxy Wholesale. 2-day delivery, and always tries an upsell. |
 | ☕ | **You** | The café owner. Approves anything over budget with one reply. |
+
+## Masky avatars: faces and voices
+
+<a href="https://masky.ai/t-26-10-4lbc"><img src="docs/masky/mochi-talking.gif" alt="Mochi's Masky avatar asking the owner to approve the order" width="240" align="right"></a>
+
+The herd works in Band rooms, but the owner is a person, so the herd also needs faces and voices. Each agent gets a
+[Masky](https://masky.ai) avatar: a portrait generated on Masky, the same personality prompt its LLM uses, and a
+Masky voice.
+
+When Mochi needs the owner (the over-budget approval and the final receipt), it says the line on camera through
+its avatar. The Band message links to the Masky player, which plays the talking-head clip as soon as it renders.
+All other traffic stays in Band text, where the agents parse it.
+
+▶️ **[Watch Mochi ask for approval on Masky](https://masky.ai/t-26-10-4lbc)** (14 seconds, rendered by Masky,
+[MP4](docs/masky/mochi-approval.mp4))
+
+| Agent | Masky voice | Status |
+|---|---|---|
+| 🍊 Mochi | Expressive Girl | live avatar, used in the approval and receipt |
+| 🥕 Tofu | Sitcom Girl | defined, created by `setup` on a Creator account |
+| 🪙 Yuzu | Mrs. Pembroke | defined |
+| 🐢 Shelly | Turtle Guru | defined |
+| 🐦 Zippy | Highly Reactive Guy | defined |
+| 🦊 Foxy | Charming Cowgirl | defined |
+
+How it works, in [`capybargain/masky.py`](capybargain/masky.py):
+
+- `setup` generates each portrait with Masky's image API and creates the avatar with its personality and voice.
+- `speak` opens a Masky conversation for the agent and injects a `speak` turn with `output: "video"`, so the avatar
+  says the exact line, lip-synced. [`CapyAgent.on_camera`](capybargain/agents.py#L154) adds the player link to the
+  Band message.
+- Without `MASKY_API_KEY`, or for an agent with no avatar yet, it runs as a mock: it logs the line and adds no link.
+
+<br clear="right">
 
 ## What happens in a run
 
@@ -109,13 +146,13 @@ Because the LLMs make the moves, every run lands on slightly different prices.
 
 | Band feature | How CapyBargain uses it | Code |
 |---|---|---|
-| **@mention routing** | Every handoff is a mention: Tofu → Mochi → each supplier → Yuzu. Status updates mention the human, which keeps them informed without waking another agent. | [`CapyAgent.human`](capybargain/agents.py#L192) |
-| **Peer discovery** | Mochi calls `band_lookup_peers` and keeps the peers whose description starts with `Supplier ·`. No supplier is hard-wired. | [`Mochi.find_suppliers`](capybargain/agents.py#L588) |
-| **Agent-created rooms** | Mochi creates a titled quote room per supplier (`create_agent_chat`), adds the supplier (`add_participant`), and adds the owner so they can watch. | [`Mochi.request_quote`](capybargain/agents.py#L609) |
-| **Room task board (beta)** | Tofu creates one task per item. Mochi sets the board's goal, moves the tasks to `in_progress`, parks them in `in_review` while the owner decides, and completes each one with its PO number as a comment. | [`Tofu.handle`](capybargain/agents.py#L220) · [`Mochi.start_deal`](capybargain/agents.py#L540) · [order confirmed](capybargain/agents.py#L667) |
-| **Attention events** | A blocking `review` event asks the owner to approve the over-budget order. A second event with `resolves` closes it. | [`Mochi.on_budget`](capybargain/agents.py#L780) · [`Mochi.on_owner_reply`](capybargain/agents.py#L825) |
-| **Thought and task events** | Mochi's reasoning ("coffee beans: runs out in 1 day → Zippy") goes into the audit trail. A task event carries each quote room's id, so HQ links to every negotiation. | [`Mochi.send_counters`](capybargain/agents.py#L689) · [room link](capybargain/agents.py#L622) |
-| **Error events, settled turns** | A failing handler posts an `error` event instead of raising, because a raised error gets the message delivered again and a negotiation step would run twice. Every handler settles its turn. | [`CapyAgent.on_message`](capybargain/agents.py#L167) |
+| **@mention routing** | Every handoff is a mention: Tofu → Mochi → each supplier → Yuzu. Status updates mention the human, which keeps them informed without waking another agent. | [`CapyAgent.human`](capybargain/agents.py#L197) |
+| **Peer discovery** | Mochi calls `band_lookup_peers` and keeps the peers whose description starts with `Supplier ·`. No supplier is hard-wired. | [`Mochi.find_suppliers`](capybargain/agents.py#L593) |
+| **Agent-created rooms** | Mochi creates a titled quote room per supplier (`create_agent_chat`), adds the supplier (`add_participant`), and adds the owner so they can watch. | [`Mochi.request_quote`](capybargain/agents.py#L614) |
+| **Room task board (beta)** | Tofu creates one task per item. Mochi sets the board's goal, moves the tasks to `in_progress`, parks them in `in_review` while the owner decides, and completes each one with its PO number as a comment. | [`Tofu.handle`](capybargain/agents.py#L225) · [`Mochi.start_deal`](capybargain/agents.py#L545) · [order confirmed](capybargain/agents.py#L672) |
+| **Attention events** | A blocking `review` event asks the owner to approve the over-budget order. A second event with `resolves` closes it. | [`Mochi.on_budget`](capybargain/agents.py#L785) · [`Mochi.on_owner_reply`](capybargain/agents.py#L830) |
+| **Thought and task events** | Mochi's reasoning ("coffee beans: runs out in 1 day → Zippy") goes into the audit trail. A task event carries each quote room's id, so HQ links to every negotiation. | [`Mochi.send_counters`](capybargain/agents.py#L694) · [room link](capybargain/agents.py#L627) |
+| **Error events, settled turns** | A failing handler posts an `error` event instead of raising, because a raised error gets the message delivered again and a negotiation step would run twice. Every handler settles its turn. | [`CapyAgent.on_message`](capybargain/agents.py#L172) |
 | **Human API** | Plays the owner (open HQ, kick off, approve) and reads every room's messages and events back for the UI. | [`owner.py`](capybargain/owner.py#L60) · [`transcript.py`](capybargain/transcript.py#L96) |
 | **Agent API** | Reads the task board and each task's history back, with Mochi's key. | [`transcript.board`](capybargain/transcript.py#L69) |
 | **Python SDK** | Each agent is a `SimpleAdapter`, and all six run in one process. | [`run.py`](capybargain/run.py#L30) |
@@ -165,6 +202,14 @@ uv run python scripts/register_agents.py       # creates the 6 agents, saves the
 
 Already registered the herd somewhere else? Copy that `agent_config.yaml` next to `.env` instead
 (each agent's key is shown only once, but you can regenerate one in the Band app).
+
+**Masky avatars** (optional): put a key from [masky.ai/developer](https://masky.ai/developer) in `.env` as
+`MASKY_API_KEY`, then:
+
+```bash
+uv run python -m capybargain.masky setup                          # creates the avatars, saves ids to masky_avatars.json
+uv run python -m capybargain.masky say mochi "Hello, boss!" --wait  # one line on camera, prints the clip link
+```
 
 **Live, with you as the owner:**
 
@@ -232,6 +277,7 @@ The primitives fit this problem well, and every rough edge we hit had a small wo
 capybargain/
   agents.py        the herd: Tofu, Yuzu, Mochi and the suppliers (Band SimpleAdapters)
   llm.py           LLM voice and decisions from any OpenAI-compatible endpoint, with fallbacks
+  masky.py         Masky avatars: portraits, voices, and lines said on camera (mock mode without a key)
   deal.py          shopping lists, quotes, counter-offers, guardrails, budget math (pure, unit tested)
   pantry.py        the café's pantry, budget and each supplier's price list
   roster.py        names and descriptions the agents are registered with
@@ -269,3 +315,6 @@ The music is synthesized in `video/soundtrack.py`, and all the characters are or
   step isn't exercised here.
 - **The pantry is a fixed snapshot,** because room file uploads aren't available on Band Cloud yet. A real
   café would feed it from its point-of-sale system.
+- **Masky came in late.** Mochi's avatar and clip are real. Masky's free plan allows one avatar, so the other five
+  are defined in code and created by `setup` on a Creator account. The recorded Band run and the 2-minute video
+  were made before the Masky integration, so they don't show the avatar.
