@@ -1,6 +1,6 @@
 # CapyBargain: a purchasing department run by AI capybaras
 
-**Built on Band** · 🎬 [2-minute demo on YouTube](https://www.youtube.com/watch?v=qwdnISwI0pU) ([MP4](video/capybargain-demo.mp4))
+**Built on Band** · 🎬 [2-minute demo on YouTube](https://www.youtube.com/watch?v=qwdnISwI0pU) ([MP4](video/capybargain-demo.mp4)) · 🖼️ [Slides](https://claude.ai/artifact/9ydVFaXJdff9DaSjDDb17Z) · 🎭 Faces and voices by [Masky](https://masky.ai)
 
 ## Inspiration
 
@@ -40,6 +40,11 @@ thought bubbles, and the quote board, task board and budget meter fill in as the
 replay a recorded run or follow a live one straight from Band.
 
 ## How we built it
+
+- **Masky avatars.** Each agent has a Masky avatar: a portrait generated on Masky, its persona and a Masky voice.
+  When Mochi needs the owner, it says the line on camera ([watch Mochi's clip](https://masky.ai/t-26-10-4lbc)) and the
+  Band message links to the Masky player. Mochi's avatar is live; the free plan allows one, so the other five are
+  created by `masky setup` on a Creator account.
 
 - **Band Python SDK.** Each agent is a `SimpleAdapter`, and all six run in one process.
 - **@mention routing** carries the work between agents. Every Band message must mention someone, so status
